@@ -2,6 +2,7 @@ import * as ex from 'excalibur'
 import { Resources } from '../resources'
 import { Player } from './player'
 import { GameUI } from '../ui/gameUI'
+import { findPlayer } from '../utils/actorUtils'
 
 export class ShopKeeper extends ex.Actor {
   private counter: ex.Actor
@@ -15,17 +16,16 @@ export class ShopKeeper extends ex.Actor {
       width: 75,
       height: 150,
     })
-    this.graphics.use(
-      Resources.Shop.toSprite())
 
     // Create counter
     this.counter = new ex.Actor({
-      pos: ex.vec(25, 0),
-      width: 75,
-      height: 175,
+      pos: ex.vec(10, 0),
+      width: 50,
+      height: 220,
       color: ex.Color.fromHex('#4a3728'),
       collisionType: ex.CollisionType.Fixed,
     })
+    this.counter.graphics.use(Resources.Shop.toSprite())
 
     // Create shopkeeper sprite
     this.keeper = new ex.Actor({
@@ -72,17 +72,4 @@ export class ShopKeeper extends ex.Actor {
     this.addChild(this.keeper)
   }
 
-  onPreUpdate(engine: ex.Engine): void {
-    if (!this.player) {
-      this.player = this.scene?.actors.find(
-        (actor) => actor instanceof Player
-      ) as unknown as Player
-    }
-
-    if (this.player) {
-      // Make shopkeeper look at player
-      const direction = this.keeper.pos.sub(this.player.pos)
-      this.keeper.rotation = direction.toAngle()
-    }
-  }
 }
