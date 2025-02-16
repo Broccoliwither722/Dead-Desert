@@ -294,9 +294,7 @@ export class Player extends ex.Actor {
 
   public increaseMaxHealth(amount: number): void {
     this.maxHealth += amount
-    if (this.health > this.maxHealth) {
-      this.health = Math.min(this.health + amount, this.maxHealth)
-    }
+    this.health = Math.min(this.health + amount, this.maxHealth)
     this.gameUI.updateHealthBar(this.health, this.maxHealth)
     this.saveHealthState()
   }

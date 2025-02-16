@@ -20,7 +20,7 @@ export class ShopSystem {
       name: 'Ammo Box',
       description: '+24 Ammo',
       cost: 10,
-      icon: 'textures/AmmoBoxIcon.svg',
+      icon: 'textures/AmmoBoxIcon.png',
       oneTime: false,
       apply: (player: Player) => player.addAmmo(24),
     },
