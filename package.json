@@ -5,7 +5,7 @@
   "homepage": "https://broccoliwither722.github.io/Dead-Desert",
   "scripts": {
     "start": "vite",
-    "build": "tsc && vite build --base=/Dead-Desert/",
+    "build": "vite build --base=/Dead-Desert/",
     "serve": "vite preview"
   },
   "author": "",
