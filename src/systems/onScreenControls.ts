@@ -7,10 +7,11 @@ export class OnScreenControls {
   private shootButton: HTMLButtonElement
   private reloadButton: HTMLButtonElement
   private container: HTMLDivElement
-  
+
   private moveVector: ex.Vector = ex.vec(0, 0)
   private isShooting: boolean = false
-  
+  private isReloading: boolean = false
+
   private constructor() {
     this.createControlElements()
     this.setupEventListeners()
@@ -58,7 +59,7 @@ export class OnScreenControls {
   private setupEventListeners() {
     // Analog stick touch handling
     let startPos: ex.Vector | null = null
-    
+
     this.analogStick.addEventListener('touchstart', (e) => {
       const touch = e.touches[0]
       const rect = this.analogStick.getBoundingClientRect()
@@ -99,7 +100,7 @@ export class OnScreenControls {
 
     // Reload button handling
     this.reloadButton.addEventListener('click', () => {
-      document.dispatchEvent(new KeyboardEvent('keydown', { key: 'r' }))
+      this.isReloading = true
     })
   }
 
@@ -109,10 +110,9 @@ export class OnScreenControls {
     const normalized = pos.normalize()
     const clampedDistance = Math.min(distance, maxDistance)
     const finalPos = normalized.scale(clampedDistance)
-    
+
     this.moveVector = normalized.scale(clampedDistance / maxDistance)
-    this.analogKnob.style.transform = 
-      `translate(calc(-50% + ${finalPos.x}px), calc(-50% + ${finalPos.y}px))`
+    this.analogKnob.style.transform = `translate(calc(-50% + ${finalPos.x}px), calc(-50% + ${finalPos.y}px))`
   }
 
   public getMoveVector(): ex.Vector {
@@ -121,6 +121,10 @@ export class OnScreenControls {
 
   public isTryingToShoot(): boolean {
     return this.isShooting
+  }
+
+  public isTryingToReload(): boolean {
+    return this.isReloading
   }
 
   public show() {

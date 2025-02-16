@@ -3,16 +3,21 @@ import { Town } from './town'
 import { UIManager } from '../ui/UIManager'
 
 export class GameOver extends Scene {
+  container: HTMLElement
+
   public onActivate() {
     // Clear saved ammo and wave on game over
     localStorage.removeItem('playerAmmo')
+    localStorage.removeItem('playerHealth')
+    localStorage.removeItem('playerTokens')
     localStorage.removeItem('currentWave')
+    localStorage.removeItem('shopPurchases')
 
     const ui = UIManager.getInstance()
     ui.setScene('GameOver')
 
-    const container = document.createElement('div')
-    container.className = 'game-over-container'
+    this.container = document.createElement('div')
+    this.container.className = 'game-over-container'
 
     const gameOverText = document.createElement('h1')
     gameOverText.textContent = 'GAME OVER'
@@ -30,12 +35,13 @@ export class GameOver extends Scene {
       this.engine.goToScene('Saloon')
     }
 
-    container.appendChild(gameOverText)
-    container.appendChild(restartButton)
-    ui.addElement(container)
+    this.container.appendChild(gameOverText)
+    this.container.appendChild(restartButton)
+    ui.addElement(this.container)
   }
 
   public onDeactivate() {
-    UIManager.getInstance().clearUI()
+    this.container.remove()
+    // UIManager.getInstance().clearUI()
   }
 }

@@ -9,8 +9,6 @@ import { GameUI } from './ui/gameUI'
 const game = new ex.Engine({
   canvasElementId: 'game',
   pointerScope: ex.PointerScope.Canvas,
-  // width: 800,
-  // height: 600,
   backgroundColor: ex.Color.fromHex('#54C0CA'),
   // displayMode: ex.DisplayMode.FitScreenAndFill,
   // displayMode: ex.DisplayMode.FillScreen,
@@ -18,11 +16,38 @@ const game = new ex.Engine({
   // pixelRatio: 2,
   // Set the display mode differently if on mobile, to fit the screen on mobile, and FillScreen on desktop
   displayMode:
-    window.innerWidth < 800
+    window.innerWidth < 800 || window.innerHeight < 800
       ? ex.DisplayMode.FitScreenAndFill
       : ex.DisplayMode.FillScreen,
   antialiasing: true,
 })
+
+// Add debounced resize handler
+let resizeTimeout: number
+const handleResize = () => {
+  clearTimeout(resizeTimeout)
+  resizeTimeout = setTimeout(() => {
+    const currentScene = game.currentScene
+    if (currentScene) {
+      // Force scene reinitialization
+      const context = {
+        engine: game,
+        previousScene: currentScene,
+        nextScene: currentScene,
+      }
+      currentScene.onDeactivate(context)
+      currentScene.onActivate(context)
+
+      // Ensure mobile controls are visible and properly positioned
+      mobileControls.hide()
+      mobileControls.show()
+    }
+  }, 250)
+}
+
+// Add event listeners
+window.addEventListener('resize', handleResize)
+window.addEventListener('orientationchange', handleResize)
 
 // Center the camera for all scenes
 game.screen.setCurrentCamera(new ex.Camera())

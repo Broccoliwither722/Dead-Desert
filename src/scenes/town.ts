@@ -1,5 +1,6 @@
 import * as ex from 'excalibur'
 import { Player } from '../actors/player'
+import { Zombie } from '../actors/zombie'
 import { Building } from '../actors/building'
 import { Cactus } from '../actors/cactus'
 import { WaveController } from '../controllers/waveController'
@@ -101,5 +102,13 @@ export class Town extends ex.Scene {
     this.waveController.reset()
     this.player.reset()
     this.player.pos = this.initialPlayerPos
+    // Kill all zombies
+    this.actors.forEach((actor) => {
+      if (actor instanceof Zombie) {
+        actor.kill()
+      }
+    })
+    this.gameUI.hideWaveUI()
+    this.gameUI.showGameUI()
   }
 }

@@ -169,7 +169,11 @@ export class Player extends ex.Actor {
     }
 
     // Handle reloading
-    if (_engine.input.keyboard.wasPressed(ex.Keys.R) && !this.isReloading) {
+    if (
+      (_engine.input.keyboard.wasPressed(ex.Keys.R) ||
+        mobileControls.isTryingToReload()) &&
+      !this.isReloading
+    ) {
       this.startReload()
     }
 
@@ -180,11 +184,14 @@ export class Player extends ex.Actor {
       this.currentAmmo > 0 &&
       !this.isReloading
     ) {
+      if (this.engine.input.pointers.primary.lastWorldPos) {
+        this.lastMobileRotation = 0
+      }
       const currentTime = Date.now()
       if (currentTime - this.lastShotTime >= this.shotCooldown) {
-        const direction = _engine.input.pointers.primary.lastWorldPos.sub(
-          this.pos
-        )
+        // Use the current rotation to determine bullet direction
+        const direction = ex.Vector.fromAngle(this.rotation)
+
         // Calculate the gun's offset position relative to the player's rotation
         const gunOffset = ex.vec(30, -15).rotate(this.rotation)
         const bulletPos = this.pos.add(gunOffset)
