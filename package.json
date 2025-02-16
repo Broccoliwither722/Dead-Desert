@@ -1,0 +1,22 @@
+{
+  "name": "dead-desert",
+  "version": "1.0.0",
+  "main": "index.js",
+  "homepage": "https://broccoliwither722.github.io/Dead-Desert",
+  "scripts": {
+    "start": "vite",
+    "build": "tsc && vite build --base=/Dead-Desert/",
+    "serve": "vite preview"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "prettier": "^3.5.1",
+    "typescript": "5.7.3",
+    "vite": "6.1.0"
+  },
+  "dependencies": {
+    "excalibur": "0.30.3"
+  }
+}

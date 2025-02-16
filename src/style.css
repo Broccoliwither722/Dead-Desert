@@ -1,0 +1,258 @@
+#root {
+  position: relative;
+  user-select: none !important;
+}
+
+#root #ui {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none; /* Allow clicks to pass through to game by default */
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+/* Town Scene UI */
+.button {
+  position: absolute;
+  left: 50%;
+  top: 75%;
+  transform: translate(-50%, -50%);
+  padding: 15px 30px;
+  font-size: 20px;
+  background-color: #ffffff;
+  color: rgb(0, 0, 0);
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  pointer-events: auto; /* Enable clicks for the button */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  transition: all 0.3s;
+}
+
+.button:hover {
+  background-color: #45a049;
+}
+
+#ui .zombie-tracker {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 20px;
+  font-family: Arial, sans-serif;
+  pointer-events: none;
+  opacity: 1;
+  transition: all 0.3s ease;
+  transform: scaleY(1);
+}
+
+#ui .zombie-tracker svg {
+  width: 24px;
+  height: 24px;
+  fill: #8b0000; /* Dark red color for zombie icon */
+}
+
+#ui .zombie-tracker.hidden {
+  opacity: 0.5;
+  pointer-events: none;
+  transform: scaleY(0);
+}
+
+#ui .zombie-tracker img {
+  filter: invert(1);
+}
+
+#ui .health-bar {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+  width: 200px;
+  height: 20px;
+  background: rgba(255, 0, 0, 0.5);
+  border-radius: 10px;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+#ui .health-bar .fill {
+  width: 100%;
+  height: 100%;
+  background: #2ecc71;
+  transition: width 0.3s ease-in-out;
+}
+
+#ui .ammo-counter {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 50px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 12px;
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+  gap: 10px;
+}
+
+#ui .token-counter {
+  display: flex;
+  justify-content: center;
+  position: absolute;
+  top: 50px;
+  left: 145px;
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px 15px;
+  border-radius: 12px;
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+  gap: 10px;
+}
+
+#ui .token-counter img {
+  filter: invert(0.8) sepia(1) saturate(5) hue-rotate(0deg); /* Golden color */
+}
+
+#ui .reload-prompt {
+  position: absolute;
+  left: 50%;
+  top: 60%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.7);
+  color: #fff;
+  padding: 10px 20px;
+  border-radius: 8px;
+  font-family: Arial, sans-serif;
+  font-size: 16px;
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+#ui .reload-prompt.visible {
+  opacity: 1;
+}
+
+/* Game Over Scene UI */
+#ui.GameOver {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  pointer-events: auto;
+}
+
+#ui .shop-menu {
+  position: absolute;
+  right: 20px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: rgba(210, 180, 140, 0.95);
+  border-radius: 8px;
+  padding: 20px;
+  width: 300px;
+  pointer-events: auto;
+  transition: opacity 0.3s;
+}
+
+#ui .shop-menu.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#ui .shop-menu h2 {
+  color: #472a00;
+  margin: 0 0 15px 0;
+  font-family: Arial, sans-serif;
+}
+
+#ui .shop-content {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+#ui .shop-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px;
+  background: rgba(255, 255, 255, 0.5);
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+#ui .shop-item.purchased {
+  filter: saturate(0);
+  opacity: 0.7;
+}
+
+#ui .shop-item .item-info {
+  flex: 1;
+}
+
+#ui .shop-item h3 {
+  margin: 0;
+  color: #472a00;
+  font-size: 16px;
+}
+
+#ui .shop-item p {
+  margin: 5px 0;
+  color: #666;
+  font-size: 14px;
+}
+
+#ui .shop-item .cost {
+  color: #b8860b;
+  font-weight: bold;
+}
+
+#ui .shop-item button {
+  padding: 5px 15px;
+  background: #45a049;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+#ui .shop-item button:hover {
+  background: #3d8b40;
+}
+
+#ui .shop-item.purchased button {
+  display: none;
+}
+
+#ui .shop-item button.cant-afford {
+  background-color: #ff4444;
+  cursor: not-allowed;
+}
+
+@keyframes shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-5px);
+  }
+  75% {
+    transform: translateX(5px);
+  }
+}
+
+#ui .shop-item button.shake {
+  animation: shake 0.2s cubic-bezier(1, 0.42, 0.54, 1.3);
+}
