@@ -3,6 +3,7 @@ import { Bullet } from './bullet'
 import { Resources } from '../resources'
 import { GameUI } from '../ui/gameUI'
 import { ShopSystem } from '../systems/shopSystem'
+import { OnScreenControls } from '../systems/onScreenControls'
 
 interface PlayerOptions {
   pos?: ex.Vector
@@ -20,6 +21,7 @@ export class Player extends ex.Actor {
   private engine: ex.Engine
   private initialPosition: ex.Vector
   private tokens: number = 0
+  private lastMobileRotation: number = 0
 
   private idleSprite = Resources.playerIdle.toSprite()
   private oneGunSprite = Resources.playerOneGun.toSprite()
@@ -115,7 +117,11 @@ export class Player extends ex.Actor {
   }
 
   override onPreUpdate(_engine: ex.Engine, _delta: number): void {
-    // Handle horizontal movement (A/D)
+    // Get mobile control input
+    const mobileControls = OnScreenControls.getInstance()
+    const mobileInput = mobileControls.getMoveVector()
+
+    // Handle movement (combine keyboard and mobile input)
     if (
       _engine.input.keyboard.isHeld(ex.Keys.A) ||
       _engine.input.keyboard.isHeld(ex.Keys.Left)
@@ -127,10 +133,9 @@ export class Player extends ex.Actor {
     ) {
       this.vel.x = this.speed
     } else {
-      this.vel.x = 0
+      this.vel.x = mobileInput.x * this.speed
     }
 
-    // Handle vertical movement (W/S)
     if (
       _engine.input.keyboard.isHeld(ex.Keys.W) ||
       _engine.input.keyboard.isHeld(ex.Keys.Up)
@@ -142,27 +147,36 @@ export class Player extends ex.Actor {
     ) {
       this.vel.y = this.speed
     } else {
-      this.vel.y = 0
+      this.vel.y = mobileInput.y * this.speed
     }
 
-    // Get mouse position in world coordinates
-    const mousePos = _engine.input.pointers.primary.lastWorldPos
-
-    // Calculate direction vector from bird to mouse
-    const direction = mousePos.sub(this.pos)
-
-    // Set rotation to face mouse
-    this.rotation = direction.toAngle()
+    // Updated rotation logic to maintain last mobile rotation
+    if (mobileInput.magnitude > 0.1) {
+      // Use analog stick direction on mobile
+      this.lastMobileRotation = mobileInput.toAngle()
+      this.rotation = this.lastMobileRotation
+    } else if (
+      _engine.input.pointers.primary.lastWorldPos &&
+      !this.lastMobileRotation
+    ) {
+      // Only use mouse direction when actually using mouse/desktop
+      const mousePos = _engine.input.pointers.primary.lastWorldPos
+      const direction = mousePos.sub(this.pos)
+      this.rotation = direction.toAngle()
+    } else {
+      // Keep last mobile rotation when analog stick is released
+      this.rotation = this.lastMobileRotation
+    }
 
     // Handle reloading
     if (_engine.input.keyboard.wasPressed(ex.Keys.R) && !this.isReloading) {
       this.startReload()
     }
 
-    // Shooting mechanics
+    // Shooting mechanics (combine mouse and touch input)
     if (
       this.hasGun &&
-      _engine.input.pointers.isDown(0) &&
+      (mobileControls.isTryingToShoot() || _engine.input.pointers.isDown(0)) &&
       this.currentAmmo > 0 &&
       !this.isReloading
     ) {

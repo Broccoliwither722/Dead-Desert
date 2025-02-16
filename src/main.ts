@@ -3,6 +3,7 @@ import { Town } from './scenes/town'
 import { Saloon } from './scenes/saloon'
 import { GameOver } from './scenes/gameOver'
 import { Resources } from './resources'
+import { OnScreenControls } from './systems/onScreenControls'
 import { GameUI } from './ui/gameUI'
 
 const game = new ex.Engine({
@@ -12,9 +13,14 @@ const game = new ex.Engine({
   // height: 600,
   backgroundColor: ex.Color.fromHex('#54C0CA'),
   // displayMode: ex.DisplayMode.FitScreenAndFill,
-  displayMode: ex.DisplayMode.FillScreen,
+  // displayMode: ex.DisplayMode.FillScreen,
   // displayMode: ex.DisplayMode.FillContainer,
   // pixelRatio: 2,
+  // Set the display mode differently if on mobile, to fit the screen on mobile, and FillScreen on desktop
+  displayMode:
+    window.innerWidth < 800
+      ? ex.DisplayMode.FitScreenAndFill
+      : ex.DisplayMode.FillScreen,
   antialiasing: true,
 })
 
@@ -25,6 +31,7 @@ const loader = new ex.Loader(Object.values(Resources))
 
 // Initialize UI before scenes with engine reference
 const gameUI = GameUI.initialize(game)
+const mobileControls = OnScreenControls.getInstance()
 gameUI.initialize()
 
 const town = new Town()
@@ -38,6 +45,7 @@ game.addScene('GameOver', gameOver)
 game.start(loader).then(() => {
   // game.goToScene('Town')
   game.goToScene('Saloon')
+  mobileControls.show()
 })
 
 game.start()

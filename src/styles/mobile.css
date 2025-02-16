@@ -1,0 +1,71 @@
+@media (hover: none) and (pointer: coarse) {
+  .mobile-controls {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    height: 200px;
+    pointer-events: none;
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+  }
+
+  .analog-stick {
+    width: 150px;
+    height: 150px;
+    background: rgba(255, 255, 255, 0.2);
+    border-radius: 50%;
+    position: relative;
+    pointer-events: auto;
+  }
+
+  .analog-knob {
+    width: 60px;
+    height: 60px;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .action-buttons {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    pointer-events: auto;
+  }
+
+  .shoot-button,
+  .reload-button {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .shoot-button {
+    background: rgba(255, 0, 0, 0.3);
+  }
+
+  .reload-button {
+    background: rgba(255, 255, 0, 0.3);
+  }
+
+  #ui .health-bar {
+    width: calc(100% - 40px);
+  }
+
+  #ui .token-counter {
+    right: 20px;
+    left: unset;
+  }
+}
