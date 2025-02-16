@@ -61,6 +61,8 @@ export class OnScreenControls {
     let startPos: ex.Vector | null = null
 
     this.analogStick.addEventListener('touchstart', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
       const touch = e.touches[0]
       const rect = this.analogStick.getBoundingClientRect()
       startPos = ex.vec(
@@ -72,6 +74,7 @@ export class OnScreenControls {
 
     this.analogStick.addEventListener('touchmove', (e) => {
       e.preventDefault()
+      e.stopPropagation()
       if (startPos) {
         const touch = e.touches[0]
         const rect = this.analogStick.getBoundingClientRect()
@@ -83,24 +86,38 @@ export class OnScreenControls {
       }
     })
 
-    this.analogStick.addEventListener('touchend', () => {
+    this.analogStick.addEventListener('touchend', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
       startPos = null
       this.moveVector = ex.vec(0, 0)
       this.analogKnob.style.transform = 'translate(-50%, -50%)'
     })
 
     // Shoot button handling
-    this.shootButton.addEventListener('touchstart', () => {
+    this.shootButton.addEventListener('touchstart', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
       this.isShooting = true
     })
 
-    this.shootButton.addEventListener('touchend', () => {
+    this.shootButton.addEventListener('touchend', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
       this.isShooting = false
     })
 
     // Reload button handling
-    this.reloadButton.addEventListener('click', () => {
+    this.reloadButton.addEventListener('touchstart', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
       this.isReloading = true
+    })
+
+    this.reloadButton.addEventListener('touchend', (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      this.isReloading = false
     })
   }
 
