@@ -1,6 +1,7 @@
 import * as ex from 'excalibur'
 import { Zombie } from './zombie'
 import { Player } from './player'
+import { Resources } from '../resources'
 
 export class Bullet extends ex.Actor {
   constructor(pos: ex.Vector, direction: ex.Vector, speed: number = 600) {
@@ -10,6 +11,8 @@ export class Bullet extends ex.Actor {
       height: 5,
       color: ex.Color.Yellow,
     })
+    this.graphics.use(
+      Resources.Bullet.toSprite())
 
     this.vel = direction.normalize().scale(speed)
     this.rotation = direction.toAngle()
