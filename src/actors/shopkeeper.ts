@@ -15,6 +15,8 @@ export class ShopKeeper extends ex.Actor {
       width: 75,
       height: 150,
     })
+    this.graphics.use(
+      Resources.Shop.toSprite())
 
     // Create counter
     this.counter = new ex.Actor({

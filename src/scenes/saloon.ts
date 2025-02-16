@@ -12,7 +12,7 @@ export class Saloon extends Scene {
   private shopkeeper: ShopKeeper
 
   public onInitialize(engine: Engine) {
-    this.backgroundColor = Color.fromHex('#8B4513')
+    this.backgroundColor = Color.fromHex('#785124')
     this.gameUI = GameUI.getInstance()
 
     // Initialize actors with temporary positions (will be updated in onActivate)
@@ -23,7 +23,7 @@ export class Saloon extends Scene {
       width: 80,
       height: 20,
       z: 1,
-      color: Color.fromHex('#472a00'),
+      color: Color.fromHex('#754814'),
     })
     this.door.on('collisionstart', (evt) => {
       if (evt.other.owner instanceof Player) {

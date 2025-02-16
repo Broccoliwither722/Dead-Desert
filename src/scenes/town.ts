@@ -7,6 +7,7 @@ import { WaveController } from '../controllers/waveController'
 import { AmmoController } from '../controllers/ammoController'
 import { GameUI } from '../ui/gameUI'
 import { UIManager } from '../ui/UIManager'
+import { SandBackground } from '../actors/sandBackground'
 
 export class Town extends ex.Scene {
   private waveController: WaveController
@@ -16,7 +17,13 @@ export class Town extends ex.Scene {
   private initialPlayerPos: ex.Vector
 
   public onInitialize(engine: ex.Engine) {
-    this.backgroundColor = ex.Color.fromHex('#C2B280')
+    // Add sand background
+    const sandBackground = new SandBackground(
+      engine.screen.drawWidth,
+      engine.screen.drawHeight
+    )
+    this.add(sandBackground)
+
     this.waveController = new WaveController(this)
     this.ammoController = new AmmoController(this)
 
@@ -27,7 +34,7 @@ export class Town extends ex.Scene {
     })
 
     const center = engine.screen.center
-    this.initialPlayerPos = ex.vec(center.x, center.y - 200)
+    this.initialPlayerPos = ex.vec(center.x, 90)
     this.setupScene(center)
   }
 
@@ -38,9 +45,9 @@ export class Town extends ex.Scene {
 
     // Add saloon
     const saloon = new Building({
-      width: 350,
-      height: 150,
-      pos: ex.vec(center.x, 100),
+      width: 270,
+      height: 55,
+      pos: ex.vec(center.x, 30),
       color: ex.Color.Brown,
       targetScene: 'Saloon',
       doorPosition: 'south',

@@ -1,5 +1,6 @@
 import * as ex from 'excalibur'
 import { Player } from './player'
+import { Resources } from '../resources'
 
 export class Building extends ex.Actor {
   private door: ex.Actor
@@ -20,12 +21,13 @@ export class Building extends ex.Actor {
       color: options.color,
       collisionType: ex.CollisionType.Fixed,
     })
+    this.graphics.use(Resources.Saloon.toSprite())
 
     this.targetScene = options.targetScene
 
     // Calculate door position based on building dimensions
-    const doorWidth = 30
-    const doorHeight = 10
+    const doorWidth = 50
+    const doorHeight = 15
     let doorPos = options.pos.clone()
 
     switch (options.doorPosition) {
@@ -47,6 +49,8 @@ export class Building extends ex.Actor {
       pos: doorPos,
       width: doorWidth,
       height: doorHeight,
+      opacity: 0,
+
       z: 1,
       // Dark brown door
       color: ex.Color.fromHex('#8B4513'),

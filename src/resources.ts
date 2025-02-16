@@ -2,6 +2,7 @@
 import * as ex from 'excalibur'
 import { AmmoBox } from './actors/ammoBox'
 import { Cactus } from './actors/cactus'
+import { Saloon } from './scenes'
 
 export const Resources = {
   // Relative to /public in vite
@@ -16,4 +17,6 @@ export const Resources = {
   shopkeeper: new ex.ImageSource('textures/Shopkeeper.svg'),
   AmmoBox: new ex.ImageSource('textures/AmmoBoxIcon.png'),
   Cactus: new ex.ImageSource('textures/Cactus.svg'),
+  Saloon: new ex.ImageSource('textures/Saloon.svg'),
+  Shop: new ex.ImageSource('textures/Shop.svg'),
 } as const
