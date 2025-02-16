@@ -1,6 +1,7 @@
 import * as ex from 'excalibur'
 import { Player } from './player'
 import { findPlayer } from '../utils/actorUtils'
+import { backgroundGroup } from './sandBackground'
 
 export interface ZombieConfig {
   health: number
@@ -11,7 +12,7 @@ export interface ZombieConfig {
   pos: ex.Vector
 }
 
-export const zombieGroup = new ex.CollisionGroup('zombie', 0b0010, ~0b0011)
+export const zombieGroup = new ex.CollisionGroup('zombie', 0b010, ~0b101)
 
 export class Zombie extends ex.Actor {
   public health: number
@@ -97,7 +98,6 @@ export class Zombie extends ex.Actor {
   onPreUpdate(engine: ex.Engine, delta: number): void {
     if (!this.player && this.scene) {
       this.player = findPlayer(this.scene)
-      return
     }
 
     if (this.player && this.health > 0) {
@@ -108,6 +108,7 @@ export class Zombie extends ex.Actor {
       )
       const hits = this.scene!.physics.rayCast(ray, {
         maxDistance: 5000, // Reduce sight distance
+        collisionMask: ~backgroundGroup.mask,
         filter: (hit) => !(hit.body.owner instanceof Zombie), // Ignore other zombies
       })
 
@@ -152,7 +153,7 @@ export class Zombie extends ex.Actor {
 
     if (this.wanderTarget) {
       const direction = this.wanderTarget.sub(this.pos).normalize()
-      this.vel = direction.scale(this.speed * 0.3) // Even slower wandering
+      this.vel = direction.scale(this.speed * 0.5) // Even slower wandering
       // this.rotation = direction.toAngle()
       // Rotate slowly towards target
       const angle = direction.toAngle()
@@ -169,6 +170,7 @@ export class Zombie extends ex.Actor {
       const ray = new ex.Ray(this.pos, direction)
       const hits = this.scene!.physics.rayCast(ray, {
         maxDistance: 30,
+        collisionMask: ~backgroundGroup.mask,
         filter: (hit) => !(hit.body.owner instanceof Zombie),
       })
       if (hits.length > 0) {
