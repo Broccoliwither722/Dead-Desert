@@ -11,6 +11,8 @@ export interface ZombieConfig {
   pos: ex.Vector
 }
 
+export const zombieGroup = new ex.CollisionGroup('zombie', 0b0010, ~0b0010)
+
 export class Zombie extends ex.Actor {
   public health: number
   private speed: number
@@ -20,6 +22,10 @@ export class Zombie extends ex.Actor {
   private deathTriggered: boolean = false
   private damageTimer: number
   private player: Player
+  private wanderTarget: ex.Vector | null = null
+  private wanderDelay: number = 0
+  private readonly WANDER_TIMEOUT: number = 2000 // 2 seconds
+  private particleEmitter: ex.ParticleEmitter
 
   constructor(config: ZombieConfig) {
     super({
@@ -27,10 +33,11 @@ export class Zombie extends ex.Actor {
       width: 32,
       height: 32,
       collisionType: ex.CollisionType.Active,
+      collisionGroup: zombieGroup,
       collider: new ex.CircleCollider({
         radius: 16,
         offset: ex.vec(0, 0),
-      }),
+      }) as ex.Collider,
     })
 
     this.strength = config.strength || 1
@@ -39,6 +46,32 @@ export class Zombie extends ex.Actor {
     this.deathSprite = config.deathSprite
     this.graphics.use(config.sprite)
     this.damageTimer = 1000
+
+    // Setup particle emitter for death effect
+    this.particleEmitter = new ex.ParticleEmitter({
+      emitterType: ex.EmitterType.Circle,
+      radius: 5,
+      emitRate: 100,
+      isEmitting: false,
+      particle: {
+        minAngle: 0,
+        maxAngle: Math.PI * 2,
+        opacity: 1,
+        fade: true,
+        life: 1500,
+        maxSize: 6,
+        minSize: 1,
+        startSize: 6,
+        endSize: 1,
+        angularVelocity: 2,
+        vel: new ex.Vector(20, 20),
+        maxSpeed: 20,
+        acc: new ex.Vector(2, 2),
+        beginColor: ex.Color.Red,
+        endColor: ex.Color.Red,
+      },
+    })
+    this.addChild(this.particleEmitter)
 
     this.on('postcollision', (evt) => {
       // Handle player damage
@@ -64,22 +97,82 @@ export class Zombie extends ex.Actor {
   onPreUpdate(engine: ex.Engine, delta: number): void {
     if (!this.player && this.scene) {
       // Try to find player if not set yet (backup)
-      this.player = this.scene.actors.find(
-        (actor) => actor instanceof Player
-      ) as unknown as Player
+      this.player = findPlayer(this.scene)
+    }
+    if (!this.player) {
+      console.error('Player not found for zombie')
     }
 
     if (this.player && this.health > 0) {
-      const direction = this.player.pos.sub(this.pos).normalize()
-      this.vel = direction.scale(this.speed)
-      this.rotation = direction.toAngle()
+      const ray = new ex.Ray(
+        ex.vec(this.pos.x, this.pos.y),
+        this.player.pos.sub(this.pos).normalize()
+      )
+      const hits = this.scene!.physics.rayCast(ray, {
+        maxDistance: 10000,
+        searchAllColliders: true,
+        filter: (potentialHit: ex.RayCastHit) => {
+          if (potentialHit.body.owner instanceof Zombie) {
+            return false
+          }
+          return true
+        },
+      })
+      // console.log(hits)
+      const canSeePlayer = hits.some((hit) => {
+        return hit.body.owner instanceof Player
+      })
+
+      if (canSeePlayer && hits.length === 1) {
+        console.log('Zombie sees player')
+        // Chase player
+        const direction = this.player.pos.sub(this.pos).normalize()
+        this.vel = direction.scale(this.speed)
+        this.rotation = direction.toAngle()
+        this.wanderTarget = this.player.pos.clone() // Reset wander target
+      } else {
+        // Wander behavior
+        this.handleWandering(delta)
+      }
     } else {
       this.vel = ex.Vector.Zero
     }
   }
 
+  private handleWandering(delta: number): void {
+    if (!this.wanderTarget) {
+      this.wanderDelay -= delta
+      if (this.wanderDelay <= 0) {
+        // Generate new random point near center
+        const randomAngle = Math.random() * Math.PI * 2
+        const randomDistance = Math.random() * 200 + 100
+        this.wanderTarget = this.player.pos.add(
+          ex.Vector.fromAngle(randomAngle).scale(randomDistance)
+        )
+        this.wanderDelay = this.WANDER_TIMEOUT
+      }
+    }
+
+    if (this.wanderTarget) {
+      const direction = this.wanderTarget.sub(this.pos).normalize()
+      this.vel = direction.scale(this.speed * 0.5) // Move slower while wandering
+      this.rotation = direction.toAngle()
+
+      // Check if we reached the target
+      if (this.pos.distance(this.wanderTarget) < 10) {
+        this.wanderTarget = null
+      }
+    }
+  }
+
   damage(amount: number): void {
     if (this.dead) return // Don't damage if already dead
+
+    // Emit particles
+    this.particleEmitter.isEmitting = true
+    setTimeout(() => {
+      this.particleEmitter.isEmitting = false
+    }, 100) // Emit for 100ms
 
     this.health -= amount
     if (this.health <= 0 && !this.deathTriggered) {
@@ -95,6 +188,7 @@ export class Zombie extends ex.Actor {
     this.collider.clear()
     this.speed = 0
     this.graphics.use(this.deathSprite)
+
     this.actions.fade(0, 1000).callMethod(() => {
       this.kill()
     })

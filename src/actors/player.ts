@@ -10,6 +10,8 @@ interface PlayerOptions {
   numberOfGuns?: number
 }
 
+export const playerGroup = new ex.CollisionGroup('player', 0b0001, ~0b0001); 
+
 export class Player extends ex.Actor {
   jumping = false
   private speed = 150 // pixels per second
