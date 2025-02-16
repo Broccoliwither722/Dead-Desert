@@ -5,6 +5,7 @@ export const backgroundGroup = new ex.CollisionGroup('sand', 0b100, ~0b011)
 export class SandBackground extends ex.Actor {
   private walls: ex.Actor[] = []
 
+
   constructor(width: number, height: number) {
     super({
       pos: ex.vec(0, 0),
@@ -13,6 +14,7 @@ export class SandBackground extends ex.Actor {
       height,
       z: -1,
       color: ex.Color.fromHex('#ffd081'),
+
       collisionGroup: backgroundGroup,
       collisionType: ex.CollisionType.PreventCollision,
     })
@@ -95,7 +97,6 @@ export class SandBackground extends ex.Actor {
           st.x *= uResolution.x/uResolution.y;
           
           vec2 pos = st * 8.0;
-          pos.y += uTime * 0.2; // Slow vertical movement
           
           float n = noise(pos) * 0.5 + 0.5;
           
