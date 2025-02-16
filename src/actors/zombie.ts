@@ -183,6 +183,12 @@ export class Zombie extends ex.Actor {
     if (this.dead) return // Don't damage if already dead
 
     this.health -= amount
+
+    // Emit particles
+    this.particleEmitter.isEmitting = true
+    setTimeout(() => {
+      this.particleEmitter.isEmitting = false
+    }, 200)
     if (this.health <= 0 && !this.deathTriggered) {
       this.deathTriggered = true // Prevent multiple triggers
       this.die()
@@ -196,12 +202,6 @@ export class Zombie extends ex.Actor {
     this.collider.clear()
     this.speed = 0
     this.graphics.use(this.deathSprite)
-
-    // Emit death particles
-    this.particleEmitter.isEmitting = true
-    setTimeout(() => {
-      this.particleEmitter.isEmitting = false
-    }, 200)
 
     this.actions.fade(0, 1000).callMethod(() => {
       this.kill()

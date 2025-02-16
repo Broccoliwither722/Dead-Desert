@@ -33,6 +33,7 @@ export class Player extends ex.Actor {
   private maxAmmo: number = 6
   private isReloading: boolean = false
   private gameUI: GameUI
+  private damageParticleEmitter: ex.ParticleEmitter
 
   public hasGuns(numberOfGuns: number) {
     this.hasGun = numberOfGuns > 0
@@ -68,6 +69,32 @@ export class Player extends ex.Actor {
     this.loadAmmoState()
     this.loadTokens()
     this.loadHealthState()
+
+    // Setup particle emitter for death effect
+    this.damageParticleEmitter = new ex.ParticleEmitter({
+      emitterType: ex.EmitterType.Circle,
+      radius: 5,
+      emitRate: 100,
+      isEmitting: false,
+      particle: {
+        minAngle: 0,
+        maxAngle: Math.PI * 2,
+        opacity: 1,
+        fade: true,
+        life: 1500,
+        maxSize: 6,
+        minSize: 1,
+        startSize: 6,
+        endSize: 1,
+        angularVelocity: 2,
+        vel: new ex.Vector(20, 20),
+        maxSpeed: 20,
+        acc: new ex.Vector(2, 2),
+        beginColor: ex.Color.Red,
+        endColor: ex.Color.Red,
+      },
+    })
+    this.addChild(this.damageParticleEmitter)
   }
 
   private updateAmmoUI() {
@@ -234,6 +261,12 @@ export class Player extends ex.Actor {
     this.health = Math.max(0, this.health - amount)
     this.gameUI.updateHealthBar(this.health, this.maxHealth)
     this.saveHealthState()
+
+    // Emit particles
+    this.damageParticleEmitter.isEmitting = true
+    setTimeout(() => {
+      this.damageParticleEmitter.isEmitting = false
+    }, 200)
 
     if (this.health <= 0) {
       this.engine.goToScene('GameOver')
