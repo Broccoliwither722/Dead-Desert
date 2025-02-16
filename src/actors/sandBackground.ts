@@ -1,7 +1,10 @@
 import * as ex from 'excalibur'
 
+export const backgroundGroup = new ex.CollisionGroup('sand', 0b100, ~0b011)
+
 export class SandBackground extends ex.Actor {
-  private time = 0
+  private walls: ex.Actor[] = []
+
 
   constructor(width: number, height: number) {
     super({
@@ -11,11 +14,51 @@ export class SandBackground extends ex.Actor {
       height,
       z: -1,
       color: ex.Color.fromHex('#ffd081'),
+
+      collisionGroup: backgroundGroup,
       collisionType: ex.CollisionType.PreventCollision,
     })
+
+    // Initialize actors with temporary positions (will be updated in onActivate)
+  }
+
+  private createWalls(engine: ex.Engine): ex.Actor[] {
+    return [
+      new ex.Actor({
+        // Top wall
+        width: 100, // base width
+        height: 20,
+        collisionGroup: backgroundGroup,
+        collisionType: ex.CollisionType.Fixed,
+      }),
+      new ex.Actor({
+        // Bottom wall
+        width: 100, // base width
+        height: 20,
+        collisionGroup: backgroundGroup,
+        collisionType: ex.CollisionType.Fixed,
+      }),
+      new ex.Actor({
+        // Left wall
+        width: 20,
+        height: 100, // base height
+        collisionGroup: backgroundGroup,
+        collisionType: ex.CollisionType.Fixed,
+      }),
+      new ex.Actor({
+        // Right wall
+        width: 20,
+        height: 100, // base height
+        collisionGroup: backgroundGroup,
+        collisionType: ex.CollisionType.Fixed,
+      }),
+    ]
   }
 
   onInitialize(engine: ex.Engine) {
+    this.walls = this.createWalls(engine)
+    this.walls.forEach((wall) => this.addChild(wall))
+
     // Create custom shader material
     const material = engine.graphicsContext.createMaterial({
       name: 'sand-material',
@@ -54,7 +97,6 @@ export class SandBackground extends ex.Actor {
           st.x *= uResolution.x/uResolution.y;
           
           vec2 pos = st * 8.0;
-          pos.y += uTime * 0.2; // Slow vertical movement
           
           float n = noise(pos) * 0.5 + 0.5;
           
@@ -76,5 +118,27 @@ export class SandBackground extends ex.Actor {
 
     // Apply material to actor
     this.graphics.material = material
+  }
+
+  public positionWalls(engine: ex.Engine) {
+    // Get current screen dimensions
+    const screenWidth = engine.screen.resolution.width
+    const screenHeight = engine.screen.resolution.height
+    const center = engine.screen.center
+
+    // Update wall positions and scales
+    const [topWall, bottomWall, leftWall, rightWall] = this.walls
+
+    topWall.pos = ex.vec(center.x, 0)
+    topWall.scale = ex.vec(screenWidth / 100, 1) // scale based on base width
+
+    bottomWall.pos = ex.vec(center.x, screenHeight)
+    bottomWall.scale = ex.vec(screenWidth / 100, 1)
+
+    leftWall.pos = ex.vec(0, center.y)
+    leftWall.scale = ex.vec(1, screenHeight / 100) // scale based on base height
+
+    rightWall.pos = ex.vec(screenWidth, center.y)
+    rightWall.scale = ex.vec(1, screenHeight / 100)
   }
 }

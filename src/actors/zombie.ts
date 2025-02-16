@@ -1,6 +1,7 @@
 import * as ex from 'excalibur'
 import { Player } from './player'
 import { findPlayer } from '../utils/actorUtils'
+import { backgroundGroup } from './sandBackground'
 
 export interface ZombieConfig {
   health: number
@@ -11,7 +12,7 @@ export interface ZombieConfig {
   pos: ex.Vector
 }
 
-export const zombieGroup = new ex.CollisionGroup('zombie', 0b0010, ~0b0010)
+export const zombieGroup = new ex.CollisionGroup('zombie', 0b010, ~0b101)
 
 export class Zombie extends ex.Actor {
   public health: number
@@ -96,42 +97,38 @@ export class Zombie extends ex.Actor {
 
   onPreUpdate(engine: ex.Engine, delta: number): void {
     if (!this.player && this.scene) {
-      // Try to find player if not set yet (backup)
       this.player = findPlayer(this.scene)
-    }
-    if (!this.player) {
-      console.error('Player not found for zombie')
     }
 
     if (this.player && this.health > 0) {
+      // Cast ray from zombie to player
       const ray = new ex.Ray(
-        ex.vec(this.pos.x, this.pos.y),
+        this.pos,
         this.player.pos.sub(this.pos).normalize()
       )
       const hits = this.scene!.physics.rayCast(ray, {
-        maxDistance: 10000,
-        searchAllColliders: true,
-        filter: (potentialHit: ex.RayCastHit) => {
-          if (potentialHit.body.owner instanceof Zombie) {
-            return false
-          }
-          return true
-        },
-      })
-      // console.log(hits)
-      const canSeePlayer = hits.some((hit) => {
-        return hit.body.owner instanceof Player
+        maxDistance: 5000, // Reduce sight distance
+        collisionMask: ~backgroundGroup.mask,
+        filter: (hit) => !(hit.body.owner instanceof Zombie), // Ignore other zombies
       })
 
-      if (canSeePlayer && hits.length === 1) {
-        console.log('Zombie sees player')
+      // First hit should be the player for direct line of sight
+      const canSeePlayer =
+        hits.length > 0 && hits[0].body.owner instanceof Player
+
+      if (canSeePlayer) {
         // Chase player
         const direction = this.player.pos.sub(this.pos).normalize()
         this.vel = direction.scale(this.speed)
-        this.rotation = direction.toAngle()
-        this.wanderTarget = this.player.pos.clone() // Reset wander target
+        // this.rotation = direction.toAngle()
+        // Rotate slowly towards player
+        const angle = direction.toAngle()
+        const currentAngle = this.rotation
+        const diff = angle - currentAngle
+        const deltaAngle = Math.atan2(Math.sin(diff), Math.cos(diff))
+        this.rotation += deltaAngle * 0.1
+        this.wanderTarget = null
       } else {
-        // Wander behavior
         this.handleWandering(delta)
       }
     } else {
@@ -143,10 +140,11 @@ export class Zombie extends ex.Actor {
     if (!this.wanderTarget) {
       this.wanderDelay -= delta
       if (this.wanderDelay <= 0) {
-        // Generate new random point near center
+        // Wander around last known player position or current position
+        const center = this.player ? this.player.pos : this.pos
         const randomAngle = Math.random() * Math.PI * 2
-        const randomDistance = Math.random() * 200 + 100
-        this.wanderTarget = this.player.pos.add(
+        const randomDistance = Math.random() * 100 + 50 // Shorter wander distance
+        this.wanderTarget = center.add(
           ex.Vector.fromAngle(randomAngle).scale(randomDistance)
         )
         this.wanderDelay = this.WANDER_TIMEOUT
@@ -155,11 +153,27 @@ export class Zombie extends ex.Actor {
 
     if (this.wanderTarget) {
       const direction = this.wanderTarget.sub(this.pos).normalize()
-      this.vel = direction.scale(this.speed * 0.5) // Move slower while wandering
-      this.rotation = direction.toAngle()
+      this.vel = direction.scale(this.speed * 0.5) // Even slower wandering
+      // this.rotation = direction.toAngle()
+      // Rotate slowly towards target
+      const angle = direction.toAngle()
+      const currentAngle = this.rotation
+      const diff = angle - currentAngle
+      const deltaAngle = Math.atan2(Math.sin(diff), Math.cos(diff))
+      this.rotation += deltaAngle * 0.1
 
-      // Check if we reached the target
       if (this.pos.distance(this.wanderTarget) < 10) {
+        this.wanderTarget = null
+        return
+      }
+      // Do a raycast to check if we can see the target, if not, reset target
+      const ray = new ex.Ray(this.pos, direction)
+      const hits = this.scene!.physics.rayCast(ray, {
+        maxDistance: 30,
+        collisionMask: ~backgroundGroup.mask,
+        filter: (hit) => !(hit.body.owner instanceof Zombie),
+      })
+      if (hits.length > 0) {
         this.wanderTarget = null
       }
     }
@@ -168,15 +182,15 @@ export class Zombie extends ex.Actor {
   damage(amount: number): void {
     if (this.dead) return // Don't damage if already dead
 
+    this.health -= amount
+
     // Emit particles
     this.particleEmitter.isEmitting = true
     setTimeout(() => {
       this.particleEmitter.isEmitting = false
-    }, 100) // Emit for 100ms
-
-    this.health -= amount
+    }, 200)
     if (this.health <= 0 && !this.deathTriggered) {
-      this.deathTriggered = true // Prevent multiple death triggers
+      this.deathTriggered = true // Prevent multiple triggers
       this.die()
     }
   }
@@ -196,7 +210,7 @@ export class Zombie extends ex.Actor {
 
   public kill(): void {
     if (this.player) {
-      this.player.addTokens(1) // Reward 1 token per kill
+      this.player.addTokens(1) // Reward 1 token per zombie
     }
     this.emit('killed', this)
     super.kill()
