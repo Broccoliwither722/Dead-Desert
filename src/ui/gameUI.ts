@@ -95,7 +95,7 @@ export class GameUI {
     this.ammoCounter.className = 'ammo-counter'
 
     const bulletIcon = document.createElement('img')
-    bulletIcon.src = '/textures/BulletIcon.svg'
+    bulletIcon.src = 'textures/BulletIcon.svg'
     bulletIcon.width = 24
     bulletIcon.height = 24
 
@@ -120,7 +120,7 @@ export class GameUI {
     this.tokenCounter.className = 'token-counter'
 
     const tokenIcon = document.createElement('img')
-    tokenIcon.src = '/textures/TokenIcon.svg'
+    tokenIcon.src = 'textures/TokenIcon.svg'
     tokenIcon.width = 24
     tokenIcon.height = 24
 
@@ -255,7 +255,7 @@ export class GameUI {
     this.zombieTracker.className = 'zombie-tracker hidden'
 
     const zombieIcon = document.createElement('img')
-    zombieIcon.src = '/textures/ZombieIcon.svg'
+    zombieIcon.src = 'textures/ZombieIcon.svg'
     zombieIcon.width = 24
     zombieIcon.height = 24
 
