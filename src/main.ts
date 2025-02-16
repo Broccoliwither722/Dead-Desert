@@ -14,7 +14,7 @@ const game = new ex.Engine({
   // displayMode: ex.DisplayMode.FitScreenAndFill,
   displayMode: ex.DisplayMode.FillScreen,
   // displayMode: ex.DisplayMode.FillContainer,
-  pixelRatio: 2,
+  // pixelRatio: 2,
   antialiasing: true,
 })
 
