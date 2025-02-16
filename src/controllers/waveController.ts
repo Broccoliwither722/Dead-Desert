@@ -59,7 +59,7 @@ export class WaveController extends EventEmitter {
     let sprite = Resources.zombieSprite.toSprite()
     let deathSprite = Resources.zombieDeathSprite.toSprite()
     let speed = 50
-    let health = Math.ceil(this.currentWave / 10)
+    let health = 1
     let strength = 1 + Math.ceil(this.currentWave / 50)
 
     // after wave 10, add a new zombie type called "Armored Zombie" with more health, lower speed, and higher strength, and a percentage chance to spawn that increases with every 3 waves
@@ -69,7 +69,7 @@ export class WaveController extends EventEmitter {
         sprite = Resources.ArmoredZombie.toSprite()
         deathSprite = Resources.ArmoredZombieDeath.toSprite()
         speed = 30
-        health = Math.ceil(this.currentWave / 5) * 2
+        health = Math.round(2 + Math.random())
         strength = 2 + Math.ceil(this.currentWave / 50) * 2
       }
     }
