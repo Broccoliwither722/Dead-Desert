@@ -41,6 +41,7 @@ export class Player extends ex.Actor {
       width: 32,
       height: 32,
       z: 2,
+      anchor: ex.vec(0.6, 0.5), // Add this line - 0.5,0.5 is center (values from 0 to 1)
       collisionType: ex.CollisionType.Active,
       collider: new ex.CircleCollider({
         radius: 16,
@@ -53,6 +54,10 @@ export class Player extends ex.Actor {
 
     if (options.numberOfGuns !== undefined) {
       this.hasGun = options.numberOfGuns > 0
+      if (this.hasGun) {
+        // Update anchor point to be the center left of the sprite
+        this.anchor = ex.vec(0.3, 0.4)
+      }
     }
 
     // Load saved states
@@ -146,7 +151,7 @@ export class Player extends ex.Actor {
     // Calculate direction vector from bird to mouse
     const direction = mousePos.sub(this.pos)
 
-    // Set rotation to face mouse (add Math.PI/2 to adjust for sprite orientation if needed)
+    // Set rotation to face mouse
     this.rotation = direction.toAngle()
 
     // Handle reloading
