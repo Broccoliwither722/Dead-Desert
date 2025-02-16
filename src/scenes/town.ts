@@ -15,14 +15,15 @@ export class Town extends ex.Scene {
   private gameUI: GameUI = GameUI.getInstance()
   private player: Player
   private initialPlayerPos: ex.Vector
+  private sandBackground: SandBackground
 
   public onInitialize(engine: ex.Engine) {
     // Add sand background
-    const sandBackground = new SandBackground(
+    this.sandBackground = new SandBackground(
       engine.screen.drawWidth,
       engine.screen.drawHeight
     )
-    this.add(sandBackground)
+    this.add(this.sandBackground)
 
     this.waveController = new WaveController(this)
     this.ammoController = new AmmoController(this)
@@ -86,6 +87,7 @@ export class Town extends ex.Scene {
     this.player.loadHealthState()
     this.player.loadAmmoState()
     this.player.loadTokens()
+    this.sandBackground.positionWalls(this.engine)
 
     // Setup wave UI
     this.gameUI.setupWaveUI(this.waveController.currentWaveNumber + 1, () =>
