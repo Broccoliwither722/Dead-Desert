@@ -17,8 +17,11 @@ export const Resources = {
 
   shopkeeper: new ex.ImageSource('textures/Shopkeeper.svg'),
   AmmoBox: new ex.ImageSource('textures/AmmoBoxIcon.png'),
+  Healthpack: new ex.ImageSource('textures/Healthpack.svg'),
   Cactus: new ex.ImageSource('textures/Cactus.svg'),
   Saloon: new ex.ImageSource('textures/Saloon.svg'),
   Shop: new ex.ImageSource('textures/Shop.svg'),
   Bullet: new ex.ImageSource('textures/Bullet.svg'),
+
+  HealthEffect: new ex.ImageSource('textures/HealthEffect.svg'),
 } as const

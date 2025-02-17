@@ -1,13 +1,16 @@
 import * as ex from 'excalibur'
 import { AmmoBox } from '../actors/ammoBox'
+import { Healthpack } from '../actors/healthpack'
 import { Building } from '../actors/building'
 import { Cactus } from '../actors/cactus'
 import { Player } from '../actors/player'
 
-export class AmmoController {
+export class SpawnController {
   private scene: ex.Scene
-  private spawnTimer: number = 0
-  private readonly SPAWN_INTERVAL = 30000 // 30 seconds
+  private spawnAmmoTimer: number = 0
+  private spawnHealthTimer: number = 0
+  private readonly AMMO_SPAWN_INTERVAL = 30000 // 30 seconds
+  private readonly HEALTH_SPAWN_INTERVAL = 60000 // 30 seconds
 
   constructor(scene: ex.Scene) {
     this.scene = scene
@@ -16,14 +19,19 @@ export class AmmoController {
   public update(delta: number, isWaveActive: boolean): void {
     if (!isWaveActive) return
 
-    this.spawnTimer += delta
-    if (this.spawnTimer >= this.SPAWN_INTERVAL) {
-      this.spawnTimer = 0
-      this.spawnAmmoBox()
+    this.spawnAmmoTimer += delta
+    if (this.spawnAmmoTimer >= this.AMMO_SPAWN_INTERVAL) {
+      this.spawnAmmoTimer = 0
+      this.spawnActor(AmmoBox)
+    }
+    this.spawnHealthTimer += delta
+    if (this.spawnHealthTimer >= this.HEALTH_SPAWN_INTERVAL) {
+      this.spawnHealthTimer = 0
+      this.spawnActor(Healthpack)
     }
   }
 
-  private spawnAmmoBox(): void {
+  private spawnActor(ActorType: typeof ex.Actor): void {
     const center = this.scene.engine.screen.center
     let attempts = 0
     let validPosition = false
@@ -36,7 +44,7 @@ export class AmmoController {
 
       if (this.isValidSpawnPosition(testPos)) {
         validPosition = true
-        this.scene.add(new AmmoBox(testPos))
+        this.scene.add(new ActorType({ pos: testPos }))
       }
 
       attempts++
@@ -49,7 +57,7 @@ export class AmmoController {
       width: 12,
       height: 36,
       collisionType: ex.CollisionType.Passive,
-      collider: ex.Shape.Box(12, 36),
+      collider: ex.Shape.Box(36, 36),
     })
 
     return !this.scene.actors.some(

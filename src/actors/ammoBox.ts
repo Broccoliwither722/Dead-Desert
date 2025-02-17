@@ -3,9 +3,9 @@ import { Player } from './player'
 import { Resources } from '../resources'
 
 export class AmmoBox extends ex.Actor {
-  constructor(pos: ex.Vector) {
+  constructor(options) {
     super({
-      pos,
+      pos: options.pos,
       width: 36,
       height: 25,
       color: ex.Color.fromHex('#1a472a'), // Dark green
@@ -16,8 +16,7 @@ export class AmmoBox extends ex.Actor {
         destSize: {
           // Optionally specify a different projected size, otherwise use the source
           width: 36,
-          height: 36
-          ,
+          height: 36,
         },
       })
     )

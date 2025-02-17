@@ -34,6 +34,7 @@ export class Player extends ex.Actor {
   private isReloading: boolean = false
   private gameUI: GameUI
   private damageParticleEmitter: ex.ParticleEmitter
+  private healthParticleEmitter: ex.ParticleEmitter
 
   public hasGuns(numberOfGuns: number) {
     this.hasGun = numberOfGuns > 0
@@ -45,7 +46,7 @@ export class Player extends ex.Actor {
       pos: options.pos || ex.vec(100, 100),
       width: 32,
       height: 32,
-      z: 2,
+      //   z: 1,
       anchor: ex.vec(0.6, 0.5), // Add this line - 0.5,0.5 is center (values from 0 to 1)
       collisionType: ex.CollisionType.Active,
       collider: new ex.CircleCollider({
@@ -70,7 +71,6 @@ export class Player extends ex.Actor {
     this.loadTokens()
     this.loadHealthState()
 
-    // Setup particle emitter for death effect
     this.damageParticleEmitter = new ex.ParticleEmitter({
       emitterType: ex.EmitterType.Circle,
       radius: 5,
@@ -81,20 +81,46 @@ export class Player extends ex.Actor {
         maxAngle: Math.PI * 2,
         opacity: 1,
         fade: true,
-        life: 1500,
+        life: 500,
         maxSize: 6,
         minSize: 1,
         startSize: 6,
         endSize: 1,
         angularVelocity: 2,
         vel: new ex.Vector(20, 20),
-        maxSpeed: 20,
+        maxSpeed: 50,
         acc: new ex.Vector(2, 2),
         beginColor: ex.Color.Red,
         endColor: ex.Color.Red,
       },
     })
     this.addChild(this.damageParticleEmitter)
+
+    this.healthParticleEmitter = new ex.ParticleEmitter({
+      emitterType: ex.EmitterType.Rectangle,
+      radius: 8,
+      emitRate: 100,
+      isEmitting: false,
+      //   z: 50,
+      particle: {
+        minAngle: 0,
+        graphic: Resources.HealthEffect.toSprite(),
+        maxAngle: Math.PI * 2,
+        opacity: 1,
+        fade: true,
+        life: 1500,
+        maxSize: 6,
+        minSize: 6,
+        startSize: 6,
+        endSize: 6,
+        angularVelocity: 0,
+        vel: new ex.Vector(0, -20),
+        maxSpeed: 20,
+        acc: new ex.Vector(0, -5),
+        beginColor: ex.Color.Green,
+        endColor: ex.Color.Green,
+      },
+    })
   }
 
   private updateAmmoUI() {
@@ -143,6 +169,7 @@ export class Player extends ex.Actor {
     this.engine = engine
     // Update sprite based on initial gun state
     this.graphics.use(this.hasGun ? this.oneGunSprite : this.idleSprite)
+    this.addChild(this.healthParticleEmitter)
   }
 
   override onPreUpdate(_engine: ex.Engine, _delta: number): void {
@@ -323,6 +350,12 @@ export class Player extends ex.Actor {
     this.health = Math.min(this.maxHealth, this.health + amount)
     this.gameUI.updateHealthBar(this.health, this.maxHealth)
     this.saveHealthState()
+
+    this.healthParticleEmitter.z = 50
+    this.healthParticleEmitter.isEmitting = true
+    setTimeout(() => {
+      this.healthParticleEmitter.isEmitting = false
+    }, 200)
   }
 
   public increaseMaxHealth(amount: number): void {

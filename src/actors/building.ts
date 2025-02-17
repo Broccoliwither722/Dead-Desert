@@ -20,6 +20,7 @@ export class Building extends ex.Actor {
       height: options.height,
       color: options.color,
       collisionType: ex.CollisionType.Fixed,
+      z: -1,
     })
     this.graphics.use(Resources.Saloon.toSprite())
 
@@ -51,7 +52,7 @@ export class Building extends ex.Actor {
       height: doorHeight,
       opacity: 0,
 
-      z: 1,
+      z: 0,
       // Dark brown door
       color: ex.Color.fromHex('#8B4513'),
     })

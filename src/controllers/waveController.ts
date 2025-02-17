@@ -58,7 +58,8 @@ export class WaveController extends EventEmitter {
 
     let sprite = Resources.zombieSprite.toSprite()
     let deathSprite = Resources.zombieDeathSprite.toSprite()
-    let speed = 50
+    // random speed between 30 and 55
+    let speed = 30 + Math.random() * 25
     let health = 1
     let strength = 1 + Math.ceil(this.currentWave / 50)
 
@@ -68,7 +69,7 @@ export class WaveController extends EventEmitter {
       if (Math.random() * 100 < armoredZombieChance) {
         sprite = Resources.ArmoredZombie.toSprite()
         deathSprite = Resources.ArmoredZombieDeath.toSprite()
-        speed = 30
+        speed = 20 + Math.random() * 15
         health = Math.round(2 + Math.random())
         strength = 2 + Math.ceil(this.currentWave / 50) * 2
       }
