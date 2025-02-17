@@ -4,14 +4,14 @@ import { Zombie } from '../actors/zombie'
 import { Building } from '../actors/building'
 import { Cactus } from '../actors/cactus'
 import { WaveController } from '../controllers/waveController'
-import { AmmoController } from '../controllers/ammoController'
+import { SpawnController } from '../controllers/spawnController'
 import { GameUI } from '../ui/gameUI'
 import { UIManager } from '../ui/UIManager'
 import { SandBackground } from '../actors/sandBackground'
 
 export class Town extends ex.Scene {
   private waveController: WaveController
-  private ammoController: AmmoController
+  private spawnController: SpawnController
   private gameUI: GameUI = GameUI.getInstance()
   private player: Player
   private initialPlayerPos: ex.Vector
@@ -26,7 +26,7 @@ export class Town extends ex.Scene {
     this.add(this.sandBackground)
 
     this.waveController = new WaveController(this)
-    this.ammoController = new AmmoController(this)
+    this.spawnController = new SpawnController(this)
 
     this.waveController.on(WaveController.Events.WaveCompleted, () => {
       this.gameUI.setupWaveUI(this.waveController.currentWaveNumber + 1, () =>
@@ -103,7 +103,7 @@ export class Town extends ex.Scene {
   }
 
   onPreUpdate(_engine: ex.Engine, delta: number) {
-    this.ammoController.update(delta, this.waveController.isWaveActive)
+    this.spawnController.update(delta, this.waveController.isWaveActive)
     this.gameUI.updateZombieCount(this.waveController.remainingZombies)
   }
 
