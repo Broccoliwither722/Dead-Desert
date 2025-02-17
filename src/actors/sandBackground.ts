@@ -5,7 +5,6 @@ export const backgroundGroup = new ex.CollisionGroup('sand', 0b100, ~0b011)
 export class SandBackground extends ex.Actor {
   private walls: ex.Actor[] = []
 
-
   constructor(width: number, height: number) {
     super({
       pos: ex.vec(0, 0),
@@ -29,6 +28,7 @@ export class SandBackground extends ex.Actor {
         width: 100, // base width
         height: 20,
         collisionGroup: backgroundGroup,
+        color: ex.Color.fromHex('#ffd081'),
         collisionType: ex.CollisionType.Fixed,
       }),
       new ex.Actor({
@@ -36,6 +36,7 @@ export class SandBackground extends ex.Actor {
         width: 100, // base width
         height: 20,
         collisionGroup: backgroundGroup,
+        color: ex.Color.fromHex('#ffd081'),
         collisionType: ex.CollisionType.Fixed,
       }),
       new ex.Actor({
@@ -43,6 +44,7 @@ export class SandBackground extends ex.Actor {
         width: 20,
         height: 100, // base height
         collisionGroup: backgroundGroup,
+        color: ex.Color.fromHex('#ffd081'),
         collisionType: ex.CollisionType.Fixed,
       }),
       new ex.Actor({
@@ -50,6 +52,7 @@ export class SandBackground extends ex.Actor {
         width: 20,
         height: 100, // base height
         collisionGroup: backgroundGroup,
+        color: ex.Color.fromHex('#ffd081'),
         collisionType: ex.CollisionType.Fixed,
       }),
     ]
@@ -126,19 +129,21 @@ export class SandBackground extends ex.Actor {
     const screenHeight = engine.screen.resolution.height
     const center = engine.screen.center
 
+    this.scale = ex.vec(screenWidth / 100, screenHeight / 100) // scale based on base width and height
+
     // Update wall positions and scales
     const [topWall, bottomWall, leftWall, rightWall] = this.walls
 
-    topWall.pos = ex.vec(center.x, 0)
+    topWall.pos = ex.vec(center.x, -10)
     topWall.scale = ex.vec(screenWidth / 100, 1) // scale based on base width
 
-    bottomWall.pos = ex.vec(center.x, screenHeight)
+    bottomWall.pos = ex.vec(center.x, screenHeight + 10)
     bottomWall.scale = ex.vec(screenWidth / 100, 1)
 
-    leftWall.pos = ex.vec(0, center.y)
+    leftWall.pos = ex.vec(-10, center.y)
     leftWall.scale = ex.vec(1, screenHeight / 100) // scale based on base height
 
-    rightWall.pos = ex.vec(screenWidth, center.y)
+    rightWall.pos = ex.vec(screenWidth + 10, center.y)
     rightWall.scale = ex.vec(1, screenHeight / 100)
   }
 }

@@ -28,7 +28,7 @@ export class Building extends ex.Actor {
 
     // Calculate door position based on building dimensions
     const doorWidth = 50
-    const doorHeight = 15
+    const doorHeight = 18
     let doorPos = options.pos.clone()
 
     switch (options.doorPosition) {
