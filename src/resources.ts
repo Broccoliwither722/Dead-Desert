@@ -1,9 +1,5 @@
 // resources.ts
 import * as ex from 'excalibur'
-import { AmmoBox } from './actors/ammoBox'
-import { Cactus } from './actors/cactus'
-import { Saloon } from './scenes'
-import { Bullet } from './actors/bullet'
 
 export const Resources = {
   // Relative to /public in vite
@@ -24,4 +20,31 @@ export const Resources = {
   Bullet: new ex.ImageSource('textures/Bullet.svg'),
 
   HealthEffect: new ex.ImageSource('textures/HealthEffect.svg'),
+
+  ChatBubble: new ex.ImageSource('textures/ChatBubble.png'),
 } as const
+
+export const NineSlices: Record<
+  string,
+  (width: number, height: number) => ex.NineSlice
+> = {
+  ChatBubble: (width, height) =>
+    new ex.NineSlice({
+      width,
+      height,
+      source: Resources.ChatBubble,
+      sourceConfig: {
+        width: 126,
+        height: 126,
+        topMargin: 23,
+        bottomMargin: 23,
+        leftMargin: 23,
+        rightMargin: 23,
+      },
+      destinationConfig: {
+        drawCenter: true,
+        horizontalStretch: ex.NineSliceStretch.TileFit,
+        verticalStretch: ex.NineSliceStretch.Stretch,
+      },
+    }),
+}

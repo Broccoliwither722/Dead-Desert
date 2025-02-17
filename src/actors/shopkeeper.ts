@@ -3,12 +3,28 @@ import { Resources } from '../resources'
 import { Player } from './player'
 import { GameUI } from '../ui/gameUI'
 import { findPlayer } from '../utils/actorUtils'
+import { DialogBubble } from './dialogBubble'
 
 export class ShopKeeper extends ex.Actor {
   private counter: ex.Actor
   private keeper: ex.Actor
   private detectionZone: ex.Actor
   private player: Player | null = null
+  private dialogBubble: DialogBubble
+  private greetings = [
+    'Welcome to my shop, partner!',
+    'Need some supplies?',
+    'Got some fine wares for ya!',
+    'Best deals in the desert!',
+  ]
+  private goodbyes = [
+    'Stay safe out there!',
+    'Come back soon!',
+    'Watch your back out there!',
+    'Thanks for stopping by!',
+    'Stay alive out there!',
+    'Mind them zombies!',
+  ]
 
   constructor(pos: ex.Vector) {
     super({
@@ -57,14 +73,21 @@ export class ShopKeeper extends ex.Actor {
     this.detectionZone.on('collisionstart', (evt) => {
       if (evt.other.owner instanceof Player) {
         GameUI.getInstance().showShop()
+        this.showGreeting()
       }
     })
 
     this.detectionZone.on('collisionend', (evt) => {
       if (evt.other.owner instanceof Player) {
         GameUI.getInstance().hideShop()
+        this.showGoodbye()
       }
     })
+
+    // Create and position dialog bubble
+    this.dialogBubble = new DialogBubble()
+    this.dialogBubble.pos = ex.vec(-35, -55) // Position above keeper's head
+    this.addChild(this.dialogBubble)
 
     // Add all components
     this.addChild(this.detectionZone)
@@ -72,4 +95,15 @@ export class ShopKeeper extends ex.Actor {
     this.addChild(this.keeper)
   }
 
+  private showGreeting(): void {
+    const randomGreeting =
+      this.greetings[Math.floor(Math.random() * this.greetings.length)]
+    this.dialogBubble.showMessage(randomGreeting)
+  }
+
+  private showGoodbye(): void {
+    const randomGoodbye =
+      this.goodbyes[Math.floor(Math.random() * this.goodbyes.length)]
+    this.dialogBubble.showMessage(randomGoodbye)
+  }
 }
