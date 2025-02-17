@@ -18,6 +18,10 @@ export const Resources = {
   Saloon: new ex.ImageSource('textures/Saloon.svg'),
   Shop: new ex.ImageSource('textures/Shop.svg'),
   Bullet: new ex.ImageSource('textures/Bullet.svg'),
+  Chair: new ex.ImageSource('textures/Chair.svg'),
+  Table: new ex.ImageSource('textures/Table.svg'),
+  CardTable: new ex.ImageSource('textures/CardTable.svg'),
+  Dealer: new ex.ImageSource('textures/Dealer.svg'),
 
   HealthEffect: new ex.ImageSource('textures/HealthEffect.svg'),
 

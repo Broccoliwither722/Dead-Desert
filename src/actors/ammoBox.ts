@@ -1,6 +1,7 @@
 import * as ex from 'excalibur'
 import { Player } from './player'
 import { Resources } from '../resources'
+import { spawnableGroup } from '../utils/actorUtils'
 
 export class AmmoBox extends ex.Actor {
   constructor(options) {
@@ -10,6 +11,8 @@ export class AmmoBox extends ex.Actor {
       height: 25,
       color: ex.Color.fromHex('#1a472a'), // Dark green
       collisionType: ex.CollisionType.Passive,
+      collisionGroup: spawnableGroup,
+      z: 0,
     })
     this.graphics.use(
       Resources.AmmoBox.toSprite({

@@ -2,6 +2,7 @@ import * as ex from 'excalibur'
 import { Player } from './player'
 import { findPlayer } from '../utils/actorUtils'
 import { backgroundGroup } from './sandBackground'
+import { zombieGroup } from '../utils/actorUtils'
 
 export interface ZombieConfig {
   health: number
@@ -11,8 +12,6 @@ export interface ZombieConfig {
   deathSprite: ex.Sprite
   pos: ex.Vector
 }
-
-export const zombieGroup = new ex.CollisionGroup('zombie', 0b010, ~0b101)
 
 export class Zombie extends ex.Actor {
   public health: number

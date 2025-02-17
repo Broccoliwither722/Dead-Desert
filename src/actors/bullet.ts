@@ -1,7 +1,12 @@
 import * as ex from 'excalibur'
 import { Zombie } from './zombie'
-import { Player } from './player'
 import { Resources } from '../resources'
+import { spawnableGroup, playerGroup } from '../utils/actorUtils'
+
+const bulletGroup = ex.CollisionGroup.collidesWith([
+  playerGroup,
+  spawnableGroup,
+]).invert()
 
 export class Bullet extends ex.Actor {
   constructor(pos: ex.Vector, direction: ex.Vector, speed: number = 600) {
@@ -10,9 +15,9 @@ export class Bullet extends ex.Actor {
       width: 8,
       height: 5,
       color: ex.Color.Yellow,
+      collisionGroup: bulletGroup,
     })
-    this.graphics.use(
-      Resources.Bullet.toSprite())
+    this.graphics.use(Resources.Bullet.toSprite())
 
     this.vel = direction.normalize().scale(speed)
     this.rotation = direction.toAngle()
@@ -24,9 +29,8 @@ export class Bullet extends ex.Actor {
       if (otherAsZombie instanceof Zombie && !otherAsZombie.dead) {
         otherAsZombie.damage(1)
       }
-      if (!(evt.other.owner instanceof Player)) {
-        this.kill()
-      }
+
+      this.kill()
     })
 
     // Destroy bullet after 2 seconds

@@ -4,13 +4,12 @@ import { Resources } from '../resources'
 import { GameUI } from '../ui/gameUI'
 import { ShopSystem } from '../systems/shopSystem'
 import { OnScreenControls } from '../systems/onScreenControls'
+import { playerGroup } from '../utils/actorUtils'
 
 interface PlayerOptions {
   pos?: ex.Vector
   numberOfGuns?: number
 }
-
-export const playerGroup = new ex.CollisionGroup('player', 0b001, ~0b110)
 
 export class Player extends ex.Actor {
   jumping = false
@@ -49,6 +48,7 @@ export class Player extends ex.Actor {
       //   z: 1,
       anchor: ex.vec(0.6, 0.5), // Add this line - 0.5,0.5 is center (values from 0 to 1)
       collisionType: ex.CollisionType.Active,
+      colloderGroup: playerGroup,
       collider: new ex.CircleCollider({
         radius: 16,
         offset: ex.vec(0, 0),
