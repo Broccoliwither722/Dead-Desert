@@ -153,7 +153,7 @@ export class Zombie extends ex.Actor {
 
     if (this.wanderTarget) {
       const direction = this.wanderTarget.sub(this.pos).normalize()
-      this.vel = direction.scale(this.speed * 0.5) // Even slower wandering
+      this.vel = direction.scale(this.speed) // Even slower wandering
       // this.rotation = direction.toAngle()
       // Rotate slowly towards target
       const angle = direction.toAngle()

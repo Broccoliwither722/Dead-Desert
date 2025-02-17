@@ -11,6 +11,7 @@ export class OnScreenControls {
   private moveVector: ex.Vector = ex.vec(0, 0)
   private isShooting: boolean = false
   private isReloading: boolean = false
+  public isMobiling: boolean = false
 
   private constructor() {
     this.createControlElements()
@@ -70,6 +71,7 @@ export class OnScreenControls {
         touch.clientY - rect.top - rect.height / 2
       )
       this.updateKnobPosition(startPos)
+      this.isMobiling = true
     })
 
     this.analogStick.addEventListener('touchmove', (e) => {
@@ -99,6 +101,7 @@ export class OnScreenControls {
       e.preventDefault()
       e.stopPropagation()
       this.isShooting = true
+      this.isMobiling = true
     })
 
     this.shootButton.addEventListener('touchend', (e) => {
@@ -112,6 +115,7 @@ export class OnScreenControls {
       e.preventDefault()
       e.stopPropagation()
       this.isReloading = true
+      this.isMobiling = true
     })
 
     this.reloadButton.addEventListener('touchend', (e) => {
