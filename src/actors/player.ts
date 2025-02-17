@@ -1,6 +1,7 @@
 import * as ex from 'excalibur'
 import { Bullet } from './bullet'
 import { Resources } from '../resources'
+import { Zombie } from './zombie'
 import { GameUI } from '../ui/gameUI'
 import { ShopSystem } from '../systems/shopSystem'
 import { OnScreenControls } from '../systems/onScreenControls'
@@ -183,11 +184,13 @@ export class Player extends ex.Actor {
       _engine.input.keyboard.isHeld(ex.Keys.Left)
     ) {
       this.vel.x = -this.speed
+      this.lastMobileRotation = 0
     } else if (
       _engine.input.keyboard.isHeld(ex.Keys.D) ||
       _engine.input.keyboard.isHeld(ex.Keys.Right)
     ) {
       this.vel.x = this.speed
+      this.lastMobileRotation = 0
     } else {
       this.vel.x = mobileInput.x * this.speed
     }
@@ -197,31 +200,44 @@ export class Player extends ex.Actor {
       _engine.input.keyboard.isHeld(ex.Keys.Up)
     ) {
       this.vel.y = -this.speed
+      this.lastMobileRotation = 0
     } else if (
       _engine.input.keyboard.isHeld(ex.Keys.S) ||
       _engine.input.keyboard.isHeld(ex.Keys.Down)
     ) {
       this.vel.y = this.speed
+      this.lastMobileRotation = 0
     } else {
       this.vel.y = mobileInput.y * this.speed
     }
 
     // Updated rotation logic to maintain last mobile rotation
-    if (mobileInput.magnitude > 0.1) {
-      // Use analog stick direction on mobile
-      this.lastMobileRotation = mobileInput.toAngle()
-      this.rotation = this.lastMobileRotation
+    if (mobileInput.magnitude > 0.1 || mobileControls.isMobiling) {
+      // Check if there are zombies in the scene, if yes, rotate towards the closest one
+      const zombies = this.scene?.actors.filter(
+        (actor) => actor instanceof Zombie
+      ) as Zombie[]
+      if (zombies.length > 0) {
+        const closestZombie = zombies.reduce((closest, current) => {
+          const distanceToClosest = this.pos.distance(closest.pos)
+          const distanceToCurrent = this.pos.distance(current.pos)
+          return distanceToCurrent < distanceToClosest ? current : closest
+        })
+        const direction = closestZombie.pos.sub(this.pos)
+        this.rotation = direction.toAngle()
+      } else if (mobileInput.magnitude > 0.1) {
+        // Use analog stick direction on mobile
+        this.lastMobileRotation = mobileInput.toAngle()
+        this.rotation = this.lastMobileRotation
+      }
     } else if (
       _engine.input.pointers.primary.lastWorldPos &&
-      !this.lastMobileRotation
+      !mobileControls.isMobiling
     ) {
       // Only use mouse direction when actually using mouse/desktop
       const mousePos = _engine.input.pointers.primary.lastWorldPos
       const direction = mousePos.sub(this.pos)
       this.rotation = direction.toAngle()
-    } else {
-      // Keep last mobile rotation when analog stick is released
-      this.rotation = this.lastMobileRotation
     }
 
     // Handle reloading
@@ -236,7 +252,8 @@ export class Player extends ex.Actor {
     // Shooting mechanics (combine mouse and touch input)
     if (
       this.hasGun &&
-      (mobileControls.isTryingToShoot() || _engine.input.pointers.isDown(0)) &&
+      (mobileControls.isTryingToShoot() ||
+        (!mobileControls.isMobiling && _engine.input.pointers.isDown(0))) &&
       this.currentAmmo > 0 &&
       !this.isReloading
     ) {
