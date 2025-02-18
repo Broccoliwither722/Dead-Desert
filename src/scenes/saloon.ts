@@ -12,6 +12,7 @@ import { UIManager } from '../ui/UIManager'
 import { GameUI } from '../ui/gameUI'
 import { ShopKeeper } from '../actors/shopkeeper'
 import { Resources } from '../resources'
+import { Dealer } from '../actors/dealer'
 
 export class Saloon extends Scene {
   private player: Player
@@ -20,6 +21,7 @@ export class Saloon extends Scene {
   private door: Actor
   private shopkeeper: ShopKeeper
   private tables: Actor[] = []
+  private dealer: Dealer
 
   public onInitialize(engine: Engine) {
     this.backgroundColor = Color.fromHex('#785124')
@@ -50,6 +52,8 @@ export class Saloon extends Scene {
     this.shopkeeper = new ShopKeeper(vec(0, 0)) // Position will be set in onActivate
     this.add(this.shopkeeper)
 
+    this.dealer = new Dealer(vec(0, 0))
+
     // Create tables with chair children
     for (let i = 0; i < 3; i++) {
       const table = new Actor({
@@ -65,7 +69,7 @@ export class Saloon extends Scene {
       })
       table.graphics.use(
         Resources.Table.toSprite({
-          scale: vec(2, 2),
+          scale: vec(0.25, 0.25),
         })
       )
 
@@ -93,13 +97,15 @@ export class Saloon extends Scene {
         })
         chair.graphics.use(
           Resources.Chair.toSprite({
-            scale: vec(1.5, 1.5),
+            scale: vec(0.2, 0.2),
           })
         )
 
         table.addChild(chair)
       })
     }
+
+    this.tables[0].children[0].addChild(this.dealer)
   }
 
   private createWalls(engine: Engine): Actor[] {
@@ -168,12 +174,39 @@ export class Saloon extends Scene {
     // Update shopkeeper position
     this.shopkeeper.pos = vec(center.x - 300, center.y)
 
+    // Position dealer at one of the card table chairs
+    // const cardTable = this.tables[0]
+    // const dealerChair = cardTable.children[0] as Actor
+    // console.log('Card table position:', cardTable.pos)
+    // console.log('Dealer chair local position:', dealerChair.pos)
+
+    // // Calculate world position by adding parent positions
+    // const chairWorldPos = vec(
+    //   cardTable.pos.x + dealerChair.pos.x,
+    //   cardTable.pos.y + dealerChair.pos.y
+    // )
+    // this.dealer.pos = chairWorldPos
+    // console.log('Set dealer position to:', this.dealer.pos)
+
+    // // Make sure dealer is visible and properly scaled
+    // this.dealer.z = 2
+    // console.log('Dealer properties:', {
+    //   position: this.dealer.pos,
+    //   scale: this.dealer.scale,
+    //   z: this.dealer.z,
+    // })
+
     this.tables[0].pos = vec(center.x + 250, center.y - 150)
+    this.tables[0].graphics.use(
+      Resources.CardTable.toSprite({
+        scale: vec(0.25, 0.25),
+      })
+    )
     this.tables[1].pos = vec(center.x, center.y)
     this.tables[1].rotation = 45
     this.tables[2].pos = vec(center.x + 250, center.y + 150)
     this.tables[2].rotation = -28
-    ;(this.tables[0].children[0] as Actor).pos = vec(0, -90)
+    ;(this.tables[0].children[0] as Actor).pos = vec(0, -80)
 
     // Update UI
     const ui = UIManager.getInstance()

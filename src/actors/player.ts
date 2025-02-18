@@ -25,7 +25,9 @@ export class Player extends ex.Actor {
   private tokens: number = 0
   private lastMobileRotation: number = 0
 
-  private idleSprite = Resources.playerIdle.toSprite()
+  private idleSprite = Resources.playerIdle.toSprite({
+    scale: ex.vec(0.13, 0.13),
+  })
   private oneGunSprite = Resources.playerOneGun.toSprite()
 
   private totalAmmo: number = 30

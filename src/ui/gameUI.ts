@@ -2,6 +2,7 @@ import { UIManager } from './UIManager'
 import { Player } from '../actors'
 import { ShopItem, ShopSystem } from '../systems/shopSystem'
 import { findPlayer } from '../utils/actorUtils'
+import { HireItem } from '../systems/shopSystem'
 
 export class GameUI {
   private static instance: GameUI
@@ -14,6 +15,7 @@ export class GameUI {
   private reloadPrompt: HTMLDivElement | null = null
   private tokenCounter: HTMLDivElement | null = null
   private shopMenu: HTMLDivElement | null = null
+  private hireMenu: HTMLDivElement | null = null
   private uiCreated: boolean = false
 
   private constructor(engine: ex.Engine) {
@@ -43,6 +45,7 @@ export class GameUI {
     this.createAmmoUI()
     this.createTokenUI()
     this.createShopUI()
+    this.createHireUI()
     this.createWaveButton(1)
     this.createZombieTracker()
 
@@ -58,6 +61,7 @@ export class GameUI {
     if (this.tokenCounter) this.tokenCounter.style.display = 'none'
     this.hideWaveUI()
     this.hideShop()
+    this.hideHireMenu()
   }
 
   public showGameUI(): void {
@@ -239,6 +243,96 @@ export class GameUI {
 
   public hideShop(): void {
     this.shopMenu?.classList.add('hidden')
+  }
+
+  private createHireUI(): void {
+    if (this.hireMenu) return
+    this.hireMenu = document.createElement('div')
+    this.hireMenu.className = 'hire-menu hidden'
+
+    const title = document.createElement('h2')
+    title.textContent = 'Hire Helpers'
+
+    const content = document.createElement('div')
+    content.className = 'hire-content'
+
+    this.hireMenu.appendChild(title)
+    this.hireMenu.appendChild(content)
+
+    const items = ShopSystem.getInstance().getHireItems()
+    items.forEach((item) => {
+      const itemElement = this.createHireItem(item)
+      content.appendChild(itemElement)
+    })
+
+    this.uiManager.addElement(this.hireMenu)
+  }
+
+  private createHireItem(item: HireItem): HTMLDivElement {
+    const itemEl = document.createElement('div')
+    itemEl.className = 'shop-item' // Reuse shop-item style
+
+    if (!ShopSystem.getInstance().isHired(item.id)) {
+      itemEl.classList.add('locked')
+    }
+
+    const icon = document.createElement('img')
+    icon.src = item.icon
+    icon.width = 32
+    icon.height = 32
+
+    const info = document.createElement('div')
+    info.className = 'item-info'
+    info.innerHTML = `
+      <h3>${item.name}</h3>
+      <p>${item.description}</p>
+      <span class="cost">${
+        ShopSystem.getInstance().isHired(item.id)
+          ? `${item.hirePrice} tokens per wave`
+          : `${item.cost} tokens to unlock`
+      }</span>
+    `
+
+    const hireBtn = document.createElement('button')
+    hireBtn.textContent = ShopSystem.getInstance().isHired(item.id)
+      ? 'Hire'
+      : 'Unlock'
+    hireBtn.onclick = () => this.handleHire(item, hireBtn)
+
+    itemEl.appendChild(icon)
+    itemEl.appendChild(info)
+    itemEl.appendChild(hireBtn)
+
+    return itemEl
+  }
+
+  private handleHire(item: HireItem, button: HTMLButtonElement): void {
+    const player = findPlayer(this.engine.currentScene)
+    if (!player) return
+
+    if (!ShopSystem.getInstance().isHired(item.id)) {
+      // Handle unlock purchase
+      if (ShopSystem.getInstance().purchaseItem(item.id, player)) {
+        button.textContent = 'Hire'
+        const itemEl = button.closest('.shop-item')
+        if (itemEl) {
+          itemEl.classList.remove('locked')
+        }
+      }
+    } else {
+      // Handle hiring
+      if (ShopSystem.getInstance().hireHelper(item.id, player)) {
+        button.classList.add('hired')
+      }
+    }
+  }
+
+  public showHireMenu(): void {
+    this.hireMenu?.classList.remove('hidden')
+  }
+
+  public hideHireMenu(): void {
+    this.hireMenu?.classList.add('hidden')
   }
 
   public createWaveButton(waveNumber: number): void {

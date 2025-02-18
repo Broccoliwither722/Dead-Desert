@@ -3,12 +3,15 @@ import { NineSlices } from '../resources'
 
 export interface DialogBubbleConfig {
   align?: 'left' | 'right'
+  rotation?: number
+  style?: 'ChatBubble' | 'ChatBubble2'
 }
 
 export class DialogBubble extends ex.Actor {
   private text: ex.Label
   private background: ex.Actor
   private alignment: 'left' | 'right'
+  private bubbleStyle: string
 
   constructor(config: DialogBubbleConfig = {}) {
     super({
@@ -16,9 +19,11 @@ export class DialogBubble extends ex.Actor {
       height: 100,
       z: 100,
       opacity: 0,
+      rotation: config.rotation || 0,
     })
 
     this.alignment = config.align || 'left'
+    this.bubbleStyle = config.style || 'ChatBubble'
 
     this.background = new ex.Actor({
       width: 100,
@@ -28,12 +33,17 @@ export class DialogBubble extends ex.Actor {
       anchor: ex.vec(this.alignment === 'left' ? 0 : 1, 0.5),
     })
 
-    this.background.graphics.use(NineSlices.ChatBubble(100, 100))
+    this.background.graphics.use(
+      NineSlices[this.bubbleStyle]
+        ? NineSlices[this.bubbleStyle](100, 100)
+        : NineSlices.ChatBubble(100, 100)
+    )
 
     this.text = new ex.Label({
       text: '',
       pos: ex.vec(this.alignment === 'left' ? 25 : -25, -7),
       anchor: ex.vec(this.alignment === 'left' ? 0 : 1, 0),
+      rotation: config.rotation ? -config.rotation : 0, // Counter-rotate text
       color: ex.Color.Black,
       font: new ex.Font({
         smoothing: true,
@@ -58,11 +68,13 @@ export class DialogBubble extends ex.Actor {
     const desiredHeight = this.text.height + 20
 
     this.background.graphics.use(
-      NineSlices.ChatBubble(desiredWidth + 20, desiredHeight + 35)
+      NineSlices[this.bubbleStyle]
+        ? NineSlices[this.bubbleStyle](desiredWidth + 20, desiredHeight + 35)
+        : NineSlices.ChatBubble(desiredWidth + 20, desiredHeight + 35)
     )
 
     // Flip the background if right-aligned
-    if (this.alignment === 'right') {
+    if (this.alignment === 'left') {
       this.background.scale = ex.vec(-1, 1)
     }
 

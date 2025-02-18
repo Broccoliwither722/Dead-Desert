@@ -10,6 +10,10 @@ export interface ShopItem {
   apply: (player: Player) => void
 }
 
+export interface HireItem extends ShopItem {
+  hirePrice: number // Cost per wave
+}
+
 export class ShopSystem {
   private static instance: ShopSystem
   private purchasedItems: Set<string> = new Set()
@@ -44,6 +48,21 @@ export class ShopSystem {
     },
   ]
 
+  private hireItems: HireItem[] = [
+    {
+      id: 'hire_gunslinger',
+      name: 'Gunslinger',
+      description: 'A skilled shooter who helps defend against zombies',
+      icon: 'textures/gunslinger-icon.png',
+      cost: 75,
+      hirePrice: 10,
+      oneTime: true,
+      apply: (player: Player) => {
+        // Implement gunslinger effect
+      },
+    },
+  ]
+
   private constructor() {
     this.loadPurchases()
   }
@@ -57,6 +76,10 @@ export class ShopSystem {
 
   public getItems(): ShopItem[] {
     return this.items
+  }
+
+  public getHireItems(): HireItem[] {
+    return this.hireItems
   }
 
   public canPurchase(itemId: string, player: Player): boolean {
@@ -83,6 +106,28 @@ export class ShopSystem {
     }
 
     return true
+  }
+
+  public isHired(id: string): boolean {
+    return this.isPurchased(id)
+  }
+
+  public canHire(id: string, player: Player): boolean {
+    const item = this.hireItems.find((item) => item.id === id)
+    if (!item) return false
+    return item.hirePrice <= player.getTokens()
+  }
+
+  public hireHelper(id: string, player: Player): boolean {
+    const item = this.hireItems.find((item) => item.id === id)
+    if (!item || !this.isHired(id)) return false
+
+    if (player.getTokens() >= item.hirePrice) {
+      player.spendTokens(item.hirePrice)
+      item.apply(player)
+      return true
+    }
+    return false
   }
 
   private savePurchases(): void {

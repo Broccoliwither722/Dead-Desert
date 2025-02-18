@@ -50,7 +50,7 @@ export class ShopKeeper extends ex.Actor {
       height: 32,
       collisionType: ex.CollisionType.Passive,
     })
-    this.keeper.scale = ex.vec(1.5, 1.5)
+    this.keeper.scale = ex.vec(0.17, 0.17)
     this.keeper.graphics.use(Resources.shopkeeper.toSprite())
 
     // Create detection zone (15px larger than the entire setup)

@@ -260,3 +260,39 @@
 #ui .shop-item button.shake {
   animation: shake 0.2s cubic-bezier(1, 0.42, 0.54, 1.3);
 }
+
+#ui .hire-menu {
+  position: absolute;
+  left: 50%;
+  bottom: 20px;
+  transform: translateX(-50%);
+  background: rgba(210, 180, 140, 0.95);
+  border-radius: 8px;
+  padding: 20px;
+  width: 500px;
+  pointer-events: auto;
+  transition: opacity 0.3s;
+}
+
+#ui .hire-menu.hidden {
+  opacity: 0;
+  pointer-events: none;
+}
+
+#ui .hire-content {
+  display: flex;
+  gap: 10px;
+}
+
+#ui .hire-menu .shop-item {
+  flex: 1;
+}
+
+#ui .hire-menu .shop-item.locked {
+  filter: grayscale(1);
+}
+
+#ui .hire-menu .shop-item button.hired {
+  background-color: #666;
+  cursor: not-allowed;
+}
