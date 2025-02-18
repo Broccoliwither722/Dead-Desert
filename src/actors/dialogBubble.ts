@@ -74,8 +74,8 @@ export class DialogBubble extends ex.Actor {
     )
 
     // Flip the background if right-aligned
-    if (this.alignment === 'left') {
-      this.background.scale = ex.vec(-1, 1)
+    if (this.alignment !== 'left') {
+      //   this.background.scale = ex.vec(-1, 1)
     }
 
     setTimeout(() => {

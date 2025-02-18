@@ -80,11 +80,11 @@ export class Dealer extends ex.Actor {
 
     // Adjust dialog bubble without rotation since parent handles it
     this.dialogBubble = new DialogBubble({
-      align: 'left',
+      align: 'right',
       rotation: 0,
       style: 'ChatBubble2', // Use alternate chat bubble style
     })
-    this.dialogBubble.pos = ex.vec(-35, -85) // Moved to left side
+    this.dialogBubble.pos = ex.vec(-35, -25) // Moved to left side
     this.addChild(this.dialogBubble)
 
     this.addChild(this.detectionZone)

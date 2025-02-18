@@ -27,8 +27,8 @@ export const Resources = {
 
   HealthEffect: new ex.ImageSource('textures/HealthEffect.svg'),
 
-  ChatBubble: new ex.ImageSource('textures/ChatBubble.png'),
-  ChatBubble2: new ex.ImageSource('textures/ChatBubble2.png'),
+  ChatBubble: new ex.ImageSource('textures/ChatBubbleLeft.png'),
+  ChatBubble2: new ex.ImageSource('textures/ChatBubbleRight.png'),
 } as const
 
 export const NineSlices: Record<

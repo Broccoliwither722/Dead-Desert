@@ -85,7 +85,9 @@ export class ShopKeeper extends ex.Actor {
     })
 
     // Create and position dialog bubble
-    this.dialogBubble = new DialogBubble()
+    this.dialogBubble = new DialogBubble({
+      align: 'left',
+    })
     this.dialogBubble.pos = ex.vec(-35, -55) // Position above keeper's head
     this.addChild(this.dialogBubble)
 
