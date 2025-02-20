@@ -21,6 +21,7 @@ export abstract class HiredActor extends Actor {
   protected followPlayer(): void {
     // Implementation
   }
+  
   protected findNearestZombie(zombies: Zombie[]): Zombie | null {
     let nearest: Zombie | null = null
     let shortestDistance = this.detectionRange
@@ -34,11 +35,6 @@ export abstract class HiredActor extends Actor {
     })
 
     return nearest
-  }
-
-  protected shootAt(target: Zombie): void {
-    // Handle shooting logic
-    
   }
 
   protected shootAtNearestZombie(): void {

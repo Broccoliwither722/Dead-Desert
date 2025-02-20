@@ -5,18 +5,44 @@ import { Zombie } from './zombie'
 import { HiredActor } from './hiredActor'
 import { Player } from './player'
 import { Bullet } from './bullet'
+import { playerGroup } from '../utils/actorUtils'
 
 export class Gunslinger extends HiredActor {
   private gunslinger: ex.Actor
-  private dialogBubble: DialogBubble
-  private shootCooldown = 1000 // 1 second between shots
-  private lastShotTime = 0
-  private fireRate: number = 800 // ms
-  private maxPlayerDistance: number = 250
-  private minPlayerDistance: number = 80
-  private lastShot: number = 0
+  private dialogBubble: DialogBubble // Dialog bubble for the gunslinger
+  private shootCooldown = 1000 // Time between shots
+  private lastShotTime = 0 // Last time we shot
+  private maxPlayerDistance: number = 250 // Stay within this distance of player
+  private minPlayerDistance: number = 80 // Stay within this distance of player
   private rotationSpeed: number = Math.PI * 2 // One full rotation per second
   private targetRotation: number = 0
+
+  private catchphrases = [
+    'Draw!',
+    'This town ain\'t big enough for the two of us!',
+    'You feelin\' lucky, zombie?',
+    'I\'m your huckleberry.',
+    'Say hello to my little friend!',
+    'Stick \'em up!',
+    'You gonna do somethin\' or just stand there and bleed?',
+    'You got a problem, friend?',
+    'You want a piece of me?',
+    'You got a lot of nerve comin\' here.',
+    'You ain\'t from around here, are ya?',
+    'You got a double-death wish?',
+    'You want a lead salad?',
+    'You want a piece of the action?',
+    'You ain\'t gettin\' these brains!',
+    'Bam!',
+    'Bang!',
+    'Pow!',
+    'Take that!',
+    'You\'re done for!',
+    'You\'re finished!',
+    'You\'re history!',
+    'You\'re toast!',
+    'You\'re outta here!',
+  ]
 
   constructor(pos: ex.Vector, player: Player) {
     super({
@@ -25,6 +51,7 @@ export class Gunslinger extends HiredActor {
       width: 40,
       height: 32,
       collisionType: ex.CollisionType.Active,
+      collisionGroup: playerGroup,
     })
 
     this.gunslinger = new ex.Actor({
@@ -39,7 +66,7 @@ export class Gunslinger extends HiredActor {
     this.dialogBubble = new DialogBubble({
       align: 'left',
     })
-    this.dialogBubble.pos = ex.vec(-35, -45)
+    this.dialogBubble.pos = ex.vec(35, -45)
 
     this.addChild(this.gunslinger)
     this.addChild(this.dialogBubble)
@@ -66,7 +93,7 @@ export class Gunslinger extends HiredActor {
     }
 
     // Smoothly rotate towards target
-    const rotationDiff = this.targetRotation - this.rotation
+    const rotationDiff = this.targetRotation - this.gunslinger.rotation
     
     // Normalize the difference to be between -PI and PI
     let normalizedDiff = rotationDiff
@@ -76,22 +103,25 @@ export class Gunslinger extends HiredActor {
     // Apply smooth rotation
     const rotationStep = this.rotationSpeed * (delta / 1000)
     if (Math.abs(normalizedDiff) > rotationStep) {
-      this.rotation += Math.sign(normalizedDiff) * rotationStep
+      this.gunslinger.rotation += Math.sign(normalizedDiff) * rotationStep
     } else {
-      this.rotation = this.targetRotation
+      this.gunslinger.rotation = this.targetRotation
     }
 
     // Shoot if we have a target and are facing it
     if (nearestZombie && Math.abs(normalizedDiff) < 0.1) {
       const currentTime = Date.now()
       if (currentTime - this.lastShotTime >= this.shootCooldown) {
-        const direction = ex.Vector.fromAngle(this.rotation)
-        const gunOffset = ex.vec(30, -5).rotate(this.rotation)
+        const direction = ex.Vector.fromAngle(this.gunslinger.rotation)
+        const gunOffset = ex.vec(30, -5).rotate(this.gunslinger.rotation)
         const bulletPos = this.pos.add(gunOffset)
         
         const bullet = new Bullet(bulletPos, direction)
         this.scene?.add(bullet)
         this.lastShotTime = currentTime
+        if (Math.random() > 0.8) {
+          this.dialogBubble.showMessage(this.catchphrases[Math.floor(Math.random() * this.catchphrases.length)])
+        }
       }
     }
 

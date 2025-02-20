@@ -1,4 +1,6 @@
+import * as ex from 'excalibur'
 import { Player } from '../actors/player'
+import { Gunslinger } from '../actors/gunslinger'
 
 export interface ShopItem {
   id: string
@@ -63,7 +65,7 @@ export class ShopSystem {
       oneTime: true,
       createActor: (scene: ex.Scene, player: Player) => {
         const center = scene.engine.screen.center
-        return new Gunslinger(ex.vec(center.x + 200, center.y - 100), player)
+        return new Gunslinger(ex.vec(center.x + 150, 200), player)
       },
       apply: () => {} // Initial unlock effect if needed
     }
@@ -117,7 +119,7 @@ export class ShopSystem {
   }
 
   public isHired(id: string): boolean {
-    return this.activeHires.has(id)
+    return this.isPurchased(id)
   }
 
   public canHire(id: string, player: Player): boolean {
@@ -128,7 +130,7 @@ export class ShopSystem {
 
   public hireHelper(id: string, player: Player): boolean {
     const item = this.hireItems.find((item) => item.id === id)
-    if (!item || !this.isHired(id)) return false
+    if (!item || !this.isPurchased(id)) return false
 
     if (player.getTokens() >= item.hirePrice) {
       player.spendTokens(item.hirePrice)

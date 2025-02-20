@@ -311,15 +311,20 @@ export class GameUI {
     const player = findPlayer(this.engine.currentScene)
     if (!player) return
 
-    if (!ShopSystem.getInstance().isHired(item.id)) {
-      // Handle unlock purchase
-      console.log("Purchasing item", item.id)
-      if (ShopSystem.getInstance().purchaseItem(item.id, player)) {
+    const shopSystem = ShopSystem.getInstance()
+    
+    if (!shopSystem.isPurchased(item.id)) {
+      // Not yet unlocked - try to purchase
+      if (shopSystem.purchaseItem(item.id, player)) {
+        const itemEl = button.closest('.shop-item')
+        if (itemEl) {
+          itemEl.classList.remove('locked')
+        }
         this.updateHireButtonStates(player)
       }
-    } else {
-      // Handle hiring
-      if (ShopSystem.getInstance().hireHelper(item.id, player)) {
+    } else if (!shopSystem.isActiveHire(item.id)) {
+      // Unlocked but not hired for this wave - try to hire
+      if (shopSystem.hireHelper(item.id, player)) {
         this.updateHireButtonStates(player)
       }
     }
@@ -342,10 +347,10 @@ export class GameUI {
       const item = shopSystem.getHireItems().find(i => i.id === itemId)
       if (!item) return
 
-      const isHired = shopSystem.isHired(itemId)
-      const isActiveThisWave = item.isActiveThisWave
+      const isPurchased = shopSystem.isPurchased(itemId)
+      const isActiveHire = shopSystem.isActiveHire(itemId)
 
-      if (!isHired) {
+      if (!isPurchased) {
         // Not yet unlocked
         button.textContent = 'Unlock'
         if (player.getTokens() >= item.cost) {
@@ -355,7 +360,8 @@ export class GameUI {
           button.classList.add('cant-afford')
           button.classList.remove('can-unlock', 'hired')
         }
-      } else if (!isActiveThisWave) {
+        costEl.textContent = `${item.cost} tokens to unlock`
+      } else if (!isActiveHire) {
         // Unlocked but not hired for this wave
         button.textContent = 'Hire'
         if (player.getTokens() >= item.hirePrice) {
@@ -365,17 +371,14 @@ export class GameUI {
           button.classList.add('cant-afford')
           button.classList.remove('can-hire', 'hired')
         }
+        costEl.textContent = `${item.hirePrice} tokens per wave`
       } else {
         // Already hired for this wave
         button.textContent = 'Hired'
         button.classList.add('hired')
         button.classList.remove('cant-afford', 'can-hire')
+        costEl.textContent = `${item.hirePrice} tokens per wave`
       }
-
-      // Update cost display
-      costEl.textContent = isHired ? 
-        `${item.hirePrice} tokens per wave` : 
-        `${item.cost} tokens to unlock`
     })
   }
 

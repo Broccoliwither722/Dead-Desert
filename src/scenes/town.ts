@@ -18,7 +18,6 @@ export class Town extends ex.Scene {
   private player: Player
   private initialPlayerPos: ex.Vector
   private sandBackground: SandBackground
-  private gunslinger: Gunslinger | null = null
 
   public onInitialize(engine: ex.Engine) {
     // Add sand background
@@ -41,12 +40,6 @@ export class Town extends ex.Scene {
     const center = engine.screen.center
     this.initialPlayerPos = ex.vec(center.x, 90)
     this.setupScene(center)
-
-    // Add gunslinger if hired
-    if (ShopSystem.getInstance().isHired('hire_gunslinger')) {
-      this.gunslinger = new Gunslinger(ex.vec(center.x - 20, center.y - 40), this.player)
-      this.add(this.gunslinger)
-    }
   }
 
   private setupScene(center: ex.Vector) {
@@ -103,12 +96,6 @@ export class Town extends ex.Scene {
     this.gameUI.setupWaveUI(this.waveController.currentWaveNumber + 1, () =>
       this.startWave()
     )
-
-    // Position gunslinger if present
-    if (this.gunslinger) {
-      const center = this.engine.screen.center
-      this.gunslinger.pos = ex.vec(center.x + 200, center.y - 100)
-    }
   }
 
   private startWave(): void {
