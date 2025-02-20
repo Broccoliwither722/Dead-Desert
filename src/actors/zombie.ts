@@ -34,6 +34,7 @@ export class Zombie extends ex.Actor {
       height: 32,
       collisionType: ex.CollisionType.Active,
       collisionGroup: zombieGroup,
+      //@ts-ignore - Excalibur.js types are missing PolygonCollider
       collider: new ex.CircleCollider({
         radius: 16,
         offset: ex.vec(0, 0),

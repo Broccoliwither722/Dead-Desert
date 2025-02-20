@@ -270,7 +270,8 @@ export class GameUI {
 
   private createHireItem(item: HireItem): HTMLDivElement {
     const itemEl = document.createElement('div')
-    itemEl.className = 'shop-item' // Reuse shop-item style
+    itemEl.className = 'shop-item'
+    itemEl.setAttribute('data-item-id', item.id)
 
     if (!ShopSystem.getInstance().isHired(item.id)) {
       itemEl.classList.add('locked')
@@ -310,25 +311,83 @@ export class GameUI {
     const player = findPlayer(this.engine.currentScene)
     if (!player) return
 
-    if (!ShopSystem.getInstance().isHired(item.id)) {
-      // Handle unlock purchase
-      if (ShopSystem.getInstance().purchaseItem(item.id, player)) {
-        button.textContent = 'Hire'
+    const shopSystem = ShopSystem.getInstance()
+    
+    if (!shopSystem.isPurchased(item.id)) {
+      // Not yet unlocked - try to purchase
+      if (shopSystem.purchaseItem(item.id, player)) {
         const itemEl = button.closest('.shop-item')
         if (itemEl) {
           itemEl.classList.remove('locked')
         }
+        this.updateHireButtonStates(player)
       }
-    } else {
-      // Handle hiring
-      if (ShopSystem.getInstance().hireHelper(item.id, player)) {
-        button.classList.add('hired')
+    } else if (!shopSystem.isActiveHire(item.id)) {
+      // Unlocked but not hired for this wave - try to hire
+      if (shopSystem.hireHelper(item.id, player)) {
+        this.updateHireButtonStates(player)
       }
     }
   }
 
+  private updateHireButtonStates(player: Player): void {
+    const hireItems = this.hireMenu?.querySelectorAll('.shop-item')
+    if (!hireItems) return
+
+    const shopSystem = ShopSystem.getInstance()
+
+    hireItems.forEach((itemEl) => {
+      const button = itemEl.querySelector('button')
+      const costEl = itemEl.querySelector('.cost')
+      if (!button || !costEl) return
+
+      const itemId = itemEl.getAttribute('data-item-id')
+      if (!itemId) return
+
+      const item = shopSystem.getHireItems().find(i => i.id === itemId)
+      if (!item) return
+
+      const isPurchased = shopSystem.isPurchased(itemId)
+      const isActiveHire = shopSystem.isActiveHire(itemId)
+
+      if (!isPurchased) {
+        // Not yet unlocked
+        button.textContent = 'Unlock'
+        if (player.getTokens() >= item.cost) {
+          button.classList.add('can-unlock')
+          button.classList.remove('cant-afford', 'hired')
+        } else {
+          button.classList.add('cant-afford')
+          button.classList.remove('can-unlock', 'hired')
+        }
+        costEl.textContent = `${item.cost} tokens to unlock`
+      } else if (!isActiveHire) {
+        // Unlocked but not hired for this wave
+        button.textContent = 'Hire'
+        if (player.getTokens() >= item.hirePrice) {
+          button.classList.add('can-hire')
+          button.classList.remove('cant-afford', 'hired')
+        } else {
+          button.classList.add('cant-afford')
+          button.classList.remove('can-hire', 'hired')
+        }
+        costEl.textContent = `${item.hirePrice} tokens per wave`
+      } else {
+        // Already hired for this wave
+        button.textContent = 'Hired'
+        button.classList.add('hired')
+        button.classList.remove('cant-afford', 'can-hire')
+        costEl.textContent = `${item.hirePrice} tokens per wave`
+      }
+    })
+  }
+
   public showHireMenu(): void {
     this.hireMenu?.classList.remove('hidden')
+    const player = findPlayer(this.engine.currentScene)
+    if (player) {
+      this.updateHireButtonStates(player)
+    }
   }
 
   public hideHireMenu(): void {

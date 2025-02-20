@@ -288,8 +288,8 @@
   flex: 1;
 }
 
-#ui .hire-menu .shop-item.locked {
-  filter: grayscale(1);
+#ui .hire-menu .shop-item button.can-unlock {
+  background-color: #1f4cff;
 }
 
 #ui .hire-menu .shop-item button.hired {

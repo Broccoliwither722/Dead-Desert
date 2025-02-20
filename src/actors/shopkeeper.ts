@@ -59,6 +59,7 @@ export class ShopKeeper extends ex.Actor {
       width: 140, // 50 + 32 + 28 (original width + padding)
       height: 210, // 150 + 32 + 28 (original height + padding)
       collisionType: ex.CollisionType.Passive,
+      //@ts-ignore - Excalibur.js types are missing PolygonCollider
       collider: new ex.PolygonCollider({
         points: [
           ex.vec(-70, -105),

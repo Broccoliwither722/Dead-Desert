@@ -57,6 +57,7 @@ export class SpawnController {
       width: 12,
       height: 36,
       collisionType: ex.CollisionType.Passive,
+      //@ts-ignore - Excalibur.js types are missing PolygonCollider
       collider: ex.Shape.Box(36, 36),
     })
 

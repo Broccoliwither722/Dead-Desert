@@ -4,7 +4,6 @@ import { NineSlices } from '../resources'
 export interface DialogBubbleConfig {
   align?: 'left' | 'right'
   rotation?: number
-  style?: 'ChatBubble' | 'ChatBubble2'
 }
 
 export class DialogBubble extends ex.Actor {
@@ -23,7 +22,7 @@ export class DialogBubble extends ex.Actor {
     })
 
     this.alignment = config.align || 'left'
-    this.bubbleStyle = config.style || 'ChatBubble'
+    this.bubbleStyle = this.alignment === 'left' ? 'ChatBubble' : 'ChatBubble2'
 
     this.background = new ex.Actor({
       width: 100,
