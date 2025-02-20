@@ -61,6 +61,7 @@ export class Saloon extends Scene {
         height: 140,
         color: Color.fromHex('#8B4513'),
         collisionType: CollisionType.Fixed,
+        //@ts-ignore - Excalibur.js types are missing PolygonCollider
         collider: new CircleCollider({
           radius: 60,
           offset: vec(0, 0),
