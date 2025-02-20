@@ -66,7 +66,7 @@ export class Saloon extends Scene {
           radius: 60,
           offset: vec(0, 0),
         }),
-        z: 1,
+        z: -1,
       })
       table.graphics.use(
         Resources.Table.toSprite({

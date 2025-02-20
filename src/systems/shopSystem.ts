@@ -11,12 +11,16 @@ export interface ShopItem {
 }
 
 export interface HireItem extends ShopItem {
-  hirePrice: number // Cost per wave
+  hirePrice: number
+  createActor: (scene: ex.Scene, player: Player) => ex.Actor
+  isActiveThisWave?: boolean
 }
 
 export class ShopSystem {
   private static instance: ShopSystem
   private purchasedItems: Set<string> = new Set()
+  private activeHires: Set<string> = new Set()
+  private activeActors: Map<string, ex.Actor> = new Map()
 
   private items: ShopItem[] = [
     {
@@ -57,11 +61,15 @@ export class ShopSystem {
       cost: 75,
       hirePrice: 10,
       oneTime: true,
-      apply: (player: Player) => {
-        // Implement gunslinger effect
+      createActor: (scene: ex.Scene, player: Player) => {
+        const center = scene.engine.screen.center
+        return new Gunslinger(ex.vec(center.x + 200, center.y - 100), player)
       },
-    },
+      apply: () => {} // Initial unlock effect if needed
+    }
   ]
+
+  private combinedItems: ShopItem[] = [...this.items, ...this.hireItems]
 
   private constructor() {
     this.loadPurchases()
@@ -83,7 +91,7 @@ export class ShopSystem {
   }
 
   public canPurchase(itemId: string, player: Player): boolean {
-    const item = this.items.find((i) => i.id === itemId)
+    const item = this.combinedItems.find((i) => i.id === itemId)
     if (!item) return false
 
     if (item.oneTime && this.purchasedItems.has(itemId)) {
@@ -94,7 +102,7 @@ export class ShopSystem {
   }
 
   public purchaseItem(itemId: string, player: Player): boolean {
-    const item = this.items.find((i) => i.id === itemId)
+    const item = this.combinedItems.find((i) => i.id === itemId)
     if (!item || !this.canPurchase(itemId, player)) return false
 
     player.spendTokens(item.cost)
@@ -109,7 +117,7 @@ export class ShopSystem {
   }
 
   public isHired(id: string): boolean {
-    return this.isPurchased(id)
+    return this.activeHires.has(id)
   }
 
   public canHire(id: string, player: Player): boolean {
@@ -124,10 +132,23 @@ export class ShopSystem {
 
     if (player.getTokens() >= item.hirePrice) {
       player.spendTokens(item.hirePrice)
-      item.apply(player)
+      
+      if (item.createActor && player.scene) {
+        const actor = item.createActor(player.scene, player)
+        player.scene.add(actor)
+        this.activeActors.set(id, actor)
+      }
+      
+      this.activeHires.add(id)
+      item.isActiveThisWave = true
+      this.savePurchases()
       return true
     }
     return false
+  }
+
+  public isActiveHire(id: string): boolean {
+    return this.activeHires.has(id);
   }
 
   private savePurchases(): void {
@@ -135,18 +156,33 @@ export class ShopSystem {
       'shopPurchases',
       JSON.stringify(Array.from(this.purchasedItems))
     )
+    localStorage.setItem(
+      'activeHires',
+      JSON.stringify(Array.from(this.activeHires))
+    )
   }
 
   private loadPurchases(): void {
-    const saved = localStorage.getItem('shopPurchases')
-    if (saved) {
-      this.purchasedItems = new Set(JSON.parse(saved))
+    const savedPurchases = localStorage.getItem('shopPurchases')
+    if (savedPurchases) {
+      this.purchasedItems = new Set(JSON.parse(savedPurchases))
+    }
+
+    const savedHires = localStorage.getItem('activeHires')
+    if (savedHires) {
+      this.activeHires = new Set(JSON.parse(savedHires))
+      // Restore isActiveThisWave state for hired items
+      this.hireItems.forEach(item => {
+        item.isActiveThisWave = this.activeHires.has(item.id)
+      })
     }
   }
 
   public reset(): void {
     this.purchasedItems.clear()
+    this.activeHires.clear()
     localStorage.removeItem('shopPurchases')
+    localStorage.removeItem('activeHires')
   }
 
   public applyPurchasedPerks(player: Player): void {
@@ -160,5 +196,36 @@ export class ShopSystem {
 
   public isPurchased(itemId: string): boolean {
     return this.purchasedItems.has(itemId)
+  }
+
+  public onWaveEnd(scene: ex.Scene): void {
+    // Remove all active hired actors from the scene
+    this.activeActors.forEach(actor => {
+      if (actor.scene) {
+        actor.kill()
+      }
+    })
+    this.activeActors.clear()
+    this.activeHires.clear()
+    this.hireItems.forEach(item => {
+      item.isActiveThisWave = false
+    })
+    this.savePurchases()
+  }
+
+  public onWaveStart(scene: ex.Scene): void {
+    const player = scene.actors.find((a): a is Player => a instanceof Player)
+    if (!player) return
+
+    // Load saved hires and create their actors
+    this.activeHires.forEach(hireId => {
+      const item = this.hireItems.find(i => i.id === hireId)
+      if (item && item.createActor) {
+        const actor = item.createActor(scene, player)
+        scene.add(actor)
+        this.activeActors.set(item.id, actor)
+        item.isActiveThisWave = true
+      }
+    })
   }
 }

@@ -32,6 +32,7 @@ export class Town extends ex.Scene {
     this.spawnController = new SpawnController(this)
 
     this.waveController.on(WaveController.Events.WaveCompleted, () => {
+      ShopSystem.getInstance().onWaveEnd(this)
       this.gameUI.setupWaveUI(this.waveController.currentWaveNumber + 1, () =>
         this.startWave()
       )
@@ -43,7 +44,7 @@ export class Town extends ex.Scene {
 
     // Add gunslinger if hired
     if (ShopSystem.getInstance().isHired('hire_gunslinger')) {
-      this.gunslinger = new Gunslinger(ex.vec(0, 0))
+      this.gunslinger = new Gunslinger(ex.vec(center.x - 20, center.y - 40), this.player)
       this.add(this.gunslinger)
     }
   }
@@ -112,6 +113,7 @@ export class Town extends ex.Scene {
 
   private startWave(): void {
     if (this.waveController.isWaveActive) return
+    ShopSystem.getInstance().onWaveStart(this)
     this.waveController.startWave()
     this.gameUI.hideWaveUI()
     this.gameUI.showZombieTracker()
@@ -126,6 +128,7 @@ export class Town extends ex.Scene {
     this.waveController.reset()
     this.player.reset()
     this.player.pos = this.initialPlayerPos
+    ShopSystem.getInstance().onWaveEnd(this)
     // Kill all zombies
     this.actors.forEach((actor) => {
       if (actor instanceof Zombie) {
