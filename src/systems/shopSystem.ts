@@ -195,6 +195,13 @@ export class ShopSystem {
     return this.purchasedItems.has(itemId)
   }
 
+  public refreshHireState(): void {
+    // Update isActiveThisWave flag for all hire items based on activeHires set
+    this.hireItems.forEach((item) => {
+      item.isActiveThisWave = this.activeHires.has(item.id)
+    })
+  }
+
   public onWaveEnd(scene: ex.Scene): void {
     // Remove all active hired actors from the scene
     this.activeActors.forEach((actor) => {
@@ -208,6 +215,17 @@ export class ShopSystem {
       item.isActiveThisWave = false
     })
     this.savePurchases()
+
+    // Update the UI to reflect hired actors are no longer active
+    if (scene.engine) {
+      try {
+        const gameUI = GameUI.getInstance()
+        gameUI.updateHiredActorsUI()
+      } catch (error) {
+        // GameUI might not be initialized yet
+        console.log('Could not update UI after wave end')
+      }
+    }
   }
 
   public onWaveStart(scene: ex.Scene): void {

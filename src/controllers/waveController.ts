@@ -2,6 +2,8 @@ import * as ex from 'excalibur'
 import { Zombie } from '../actors/zombie'
 import { Resources } from '../resources'
 import { EventEmitter } from 'excalibur'
+import { ShopSystem } from '../systems/shopSystem'
+import { GameUI } from '../ui/gameUI'
 
 export class WaveController extends EventEmitter {
   private currentWave: number = 0
@@ -45,6 +47,14 @@ export class WaveController extends EventEmitter {
     this.currentWave++
     this.zombiesAlive = this.currentWave * 3
     this.waveActive = true
+
+    // Hide the hired actors panel when wave starts
+    try {
+      const gameUI = GameUI.getInstance()
+      gameUI.hideHiredActorsPanel()
+    } catch (error) {
+      console.log('Could not update UI when starting wave')
+    }
 
     for (let i = 0; i < this.zombiesAlive; i++) {
       this.spawnZombie()
@@ -98,6 +108,19 @@ export class WaveController extends EventEmitter {
   private completeWave(): void {
     localStorage.setItem('currentWave', this.currentWave.toString())
     this.waveActive = false
+
+    // Call ShopSystem's onWaveEnd method
+    const shopSystem = ShopSystem.getInstance()
+    shopSystem.onWaveEnd(this.scene)
+
+    // Show the hired actors panel when wave ends
+    try {
+      const gameUI = GameUI.getInstance()
+      gameUI.showHiredActorsPanel()
+    } catch (error) {
+      console.log('Could not update UI when completing wave')
+    }
+
     // Emit wave completed event
     this.emit(WaveController.Events.WaveCompleted, {
       waveNumber: this.currentWave,

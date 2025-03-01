@@ -14,12 +14,15 @@ import { ShopSystem } from '../systems/shopSystem'
 export class Town extends ex.Scene {
   private waveController!: WaveController
   private spawnController!: SpawnController
-  private gameUI: GameUI = GameUI.getInstance()
+  private gameUI!: GameUI
   private player!: Player
   private initialPlayerPos!: ex.Vector
   private sandBackground!: SandBackground
 
   public onInitialize(engine: ex.Engine) {
+    // Get the GameUI instance
+    this.gameUI = GameUI.getInstance()
+
     // Add sand background
     this.sandBackground = new SandBackground(
       engine.screen.drawWidth,
