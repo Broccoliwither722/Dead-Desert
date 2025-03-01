@@ -64,7 +64,7 @@ export class Building extends ex.Actor {
     this.door.on('collisionstart', (evt) => {
       if (
         evt.other.owner instanceof Player &&
-        !engine.currentScene['waveController']?.waveActive
+        !(engine.currentScene as any)['waveController']?.waveActive
       ) {
         engine.goToScene(this.targetScene)
       }

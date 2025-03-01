@@ -15,13 +15,13 @@ import { Resources } from '../resources'
 import { Dealer } from '../actors/dealer'
 
 export class Saloon extends Scene {
-  private player: Player
+  private player!: Player
   private gameUI: GameUI = GameUI.getInstance()
   private walls: Actor[] = []
-  private door: Actor
-  private shopkeeper: ShopKeeper
+  private door!: Actor
+  private shopkeeper!: ShopKeeper
   private tables: Actor[] = []
-  private dealer: Dealer
+  private dealer!: Dealer
 
   public onInitialize(engine: Engine) {
     this.backgroundColor = Color.fromHex('#785124')

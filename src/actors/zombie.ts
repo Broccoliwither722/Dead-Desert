@@ -21,7 +21,7 @@ export class Zombie extends ex.Actor {
   private deathSprite: ex.Sprite
   private deathTriggered: boolean = false
   private damageTimer: number
-  private player: Player
+  private player!: Player
   private wanderTarget: ex.Vector | null = null
   private wanderDelay: number = 0
   private readonly WANDER_TIMEOUT: number = 2000 // 2 seconds

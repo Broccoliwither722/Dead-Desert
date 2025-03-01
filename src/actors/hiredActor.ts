@@ -15,7 +15,7 @@ export abstract class HiredActor extends Actor {
     this.player = player
   }
 
-  abstract performAction(): void
+  // abstract performAction(): void
 
   // Common helper behavior methods
   protected followPlayer(): void {

@@ -52,7 +52,9 @@ window.addEventListener('orientationchange', handleResize)
 // Center the camera for all scenes
 game.screen.setCurrentCamera(new ex.Camera())
 
-const loader = new ex.Loader(Object.values(Resources))
+const loader = new ex.Loader(
+  Object.keys(Resources).map((key) => Resources[key as keyof typeof Resources])
+)
 
 // Initialize UI before scenes with engine reference
 const gameUI = GameUI.initialize(game)

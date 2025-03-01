@@ -12,12 +12,12 @@ import { Gunslinger } from '../actors/gunslinger'
 import { ShopSystem } from '../systems/shopSystem'
 
 export class Town extends ex.Scene {
-  private waveController: WaveController
-  private spawnController: SpawnController
+  private waveController!: WaveController
+  private spawnController!: SpawnController
   private gameUI: GameUI = GameUI.getInstance()
-  private player: Player
-  private initialPlayerPos: ex.Vector
-  private sandBackground: SandBackground
+  private player!: Player
+  private initialPlayerPos!: ex.Vector
+  private sandBackground!: SandBackground
 
   public onInitialize(engine: ex.Engine) {
     // Add sand background

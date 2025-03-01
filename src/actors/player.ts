@@ -20,7 +20,7 @@ export class Player extends ex.Actor {
   private hasGun: boolean = false
   private lastShotTime: number = 0
   private shotCooldown: number = 500 // ms between shots
-  private engine: ex.Engine
+  private engine!: ex.Engine
   private initialPosition: ex.Vector
   private tokens: number = 0
   private lastMobileRotation: number = 0

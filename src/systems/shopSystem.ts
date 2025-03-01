@@ -1,6 +1,7 @@
 import * as ex from 'excalibur'
 import { Player } from '../actors/player'
 import { Gunslinger } from '../actors/gunslinger'
+import { GameUI } from '../ui/gameUI'
 
 export interface ShopItem {
   id: string
@@ -223,5 +224,15 @@ export class ShopSystem {
         item.isActiveThisWave = true
       }
     })
+
+    // Update the UI to reflect hired actors
+    if (scene.engine) {
+      const gameUI = scene.engine.currentScene.actors.find(
+        (a) => a instanceof GameUI
+      ) as GameUI
+      if (gameUI) {
+        gameUI.updateHiredActorsUI()
+      }
+    }
   }
 }

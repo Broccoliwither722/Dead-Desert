@@ -16,6 +16,7 @@ export class GameUI {
   private tokenCounter: HTMLDivElement | null = null
   private shopMenu: HTMLDivElement | null = null
   private hireMenu: HTMLDivElement | null = null
+  private hiredActorsPanel: HTMLDivElement | null = null
   private uiCreated: boolean = false
 
   private constructor(engine: ex.Engine) {
@@ -44,6 +45,7 @@ export class GameUI {
     this.createHealthBar()
     this.createAmmoUI()
     this.createTokenUI()
+    this.createHiredActorsUI()
     this.createShopUI()
     this.createHireUI()
     this.createWaveButton(1)
@@ -59,6 +61,7 @@ export class GameUI {
     if (this.healthBar) this.healthBar.style.display = 'none'
     if (this.ammoCounter) this.ammoCounter.style.display = 'none'
     if (this.tokenCounter) this.tokenCounter.style.display = 'none'
+    if (this.hiredActorsPanel) this.hiredActorsPanel.style.display = 'none'
     this.hideWaveUI()
     this.hideShop()
     this.hideHireMenu()
@@ -68,6 +71,8 @@ export class GameUI {
     if (this.healthBar) this.healthBar.style.display = 'block'
     if (this.ammoCounter) this.ammoCounter.style.display = 'block'
     if (this.tokenCounter) this.tokenCounter.style.display = 'block'
+    if (this.hiredActorsPanel) this.hiredActorsPanel.style.display = 'block'
+    this.updateHiredActorsUI()
   }
 
   public showZombieTracker(): void {
@@ -136,6 +141,120 @@ export class GameUI {
     this.uiManager.addElement(this.tokenCounter)
 
     return this.tokenCounter
+  }
+
+  private createHiredActorsUI(): HTMLDivElement {
+    if (this.hiredActorsPanel) return this.hiredActorsPanel
+
+    this.hiredActorsPanel = document.createElement('div')
+    this.hiredActorsPanel.className = 'hired-actors-panel'
+
+    const title = document.createElement('div')
+    title.className = 'hired-actors-title'
+    title.textContent = 'Hired Help'
+
+    const actorsContainer = document.createElement('div')
+    actorsContainer.className = 'hired-actors-container'
+
+    this.hiredActorsPanel.appendChild(title)
+    this.hiredActorsPanel.appendChild(actorsContainer)
+
+    this.uiManager.addElement(this.hiredActorsPanel)
+
+    // Initially populate with unlocked actors
+    this.updateHiredActorsUI()
+
+    return this.hiredActorsPanel
+  }
+
+  public updateHiredActorsUI(): void {
+    if (!this.hiredActorsPanel) return
+
+    const actorsContainer = this.hiredActorsPanel.querySelector(
+      '.hired-actors-container'
+    )
+    if (!actorsContainer) return
+
+    // Clear existing content
+    actorsContainer.innerHTML = ''
+
+    const shopSystem = ShopSystem.getInstance()
+    const hireItems = shopSystem.getHireItems()
+    try {
+      const player = findPlayer(this.engine.currentScene)
+
+      if (!player) return
+
+      // Filter to only show unlocked items
+      const unlockedItems = hireItems.filter((item) =>
+        shopSystem.isPurchased(item.id)
+      )
+
+      if (unlockedItems.length === 0) {
+        const emptyMessage = document.createElement('div')
+        emptyMessage.className = 'empty-message'
+        emptyMessage.textContent = 'No hired help available'
+        actorsContainer.appendChild(emptyMessage)
+        return
+      }
+
+      // Create UI for each unlocked hire item
+      unlockedItems.forEach((item) => {
+        const actorElement = document.createElement('div')
+        actorElement.className = 'hired-actor-item'
+
+        const icon = document.createElement('img')
+        icon.src = item.icon
+        icon.width = 24
+        icon.height = 24
+
+        const name = document.createElement('span')
+        name.className = 'actor-name'
+        name.textContent = item.name
+
+        const hireButton = document.createElement('button')
+        hireButton.className = 'hire-button'
+
+        const isActive = shopSystem.isActiveHire(item.id)
+
+        if (isActive) {
+          hireButton.textContent = 'Hired'
+          hireButton.classList.add('hired')
+          actorElement.classList.add('active')
+        } else {
+          hireButton.textContent = 'Hire'
+          hireButton.title = `Cost: ${item.hirePrice} tokens` // Add tooltip
+
+          if (player.getTokens() >= item.hirePrice) {
+            hireButton.classList.add('can-hire')
+            hireButton.onclick = () => this.quickHireActor(item.id)
+          } else {
+            hireButton.classList.add('cant-afford')
+          }
+        }
+
+        actorElement.appendChild(icon)
+        actorElement.appendChild(name)
+        actorElement.appendChild(hireButton)
+
+        actorsContainer.appendChild(actorElement)
+      })
+    } catch (error) {
+      return
+    }
+  }
+
+  private quickHireActor(itemId: string): void {
+    const player = findPlayer(this.engine.currentScene)
+    if (!player) return
+
+    const shopSystem = ShopSystem.getInstance()
+
+    if (shopSystem.hireHelper(itemId, player)) {
+      // Update UI after successful hire
+      this.updateHiredActorsUI()
+      this.updateTokenCount(player.getTokens())
+    }
   }
 
   private createShopUI(): void {
@@ -312,7 +431,7 @@ export class GameUI {
     if (!player) return
 
     const shopSystem = ShopSystem.getInstance()
-    
+
     if (!shopSystem.isPurchased(item.id)) {
       // Not yet unlocked - try to purchase
       if (shopSystem.purchaseItem(item.id, player)) {
@@ -344,7 +463,7 @@ export class GameUI {
       const itemId = itemEl.getAttribute('data-item-id')
       if (!itemId) return
 
-      const item = shopSystem.getHireItems().find(i => i.id === itemId)
+      const item = shopSystem.getHireItems().find((i) => i.id === itemId)
       if (!item) return
 
       const isPurchased = shopSystem.isPurchased(itemId)
@@ -479,6 +598,9 @@ export class GameUI {
         tokenText.textContent = count.toString()
       }
     }
+
+    // Update the hired actors UI to reflect new token count
+    this.updateHiredActorsUI()
   }
 
   public hideWaveUI(): void {
