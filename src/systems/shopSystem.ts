@@ -67,8 +67,8 @@ export class ShopSystem {
         const center = scene.engine.screen.center
         return new Gunslinger(ex.vec(center.x + 150, 200), player)
       },
-      apply: () => {} // Initial unlock effect if needed
-    }
+      apply: () => {}, // Initial unlock effect if needed
+    },
   ]
 
   private combinedItems: ShopItem[] = [...this.items, ...this.hireItems]
@@ -134,13 +134,7 @@ export class ShopSystem {
 
     if (player.getTokens() >= item.hirePrice) {
       player.spendTokens(item.hirePrice)
-      
-      if (item.createActor && player.scene) {
-        const actor = item.createActor(player.scene, player)
-        player.scene.add(actor)
-        this.activeActors.set(id, actor)
-      }
-      
+
       this.activeHires.add(id)
       item.isActiveThisWave = true
       this.savePurchases()
@@ -150,7 +144,7 @@ export class ShopSystem {
   }
 
   public isActiveHire(id: string): boolean {
-    return this.activeHires.has(id);
+    return this.activeHires.has(id)
   }
 
   private savePurchases(): void {
@@ -174,7 +168,7 @@ export class ShopSystem {
     if (savedHires) {
       this.activeHires = new Set(JSON.parse(savedHires))
       // Restore isActiveThisWave state for hired items
-      this.hireItems.forEach(item => {
+      this.hireItems.forEach((item) => {
         item.isActiveThisWave = this.activeHires.has(item.id)
       })
     }
@@ -202,14 +196,14 @@ export class ShopSystem {
 
   public onWaveEnd(scene: ex.Scene): void {
     // Remove all active hired actors from the scene
-    this.activeActors.forEach(actor => {
+    this.activeActors.forEach((actor) => {
       if (actor.scene) {
         actor.kill()
       }
     })
     this.activeActors.clear()
     this.activeHires.clear()
-    this.hireItems.forEach(item => {
+    this.hireItems.forEach((item) => {
       item.isActiveThisWave = false
     })
     this.savePurchases()
@@ -220,8 +214,8 @@ export class ShopSystem {
     if (!player) return
 
     // Load saved hires and create their actors
-    this.activeHires.forEach(hireId => {
-      const item = this.hireItems.find(i => i.id === hireId)
+    this.activeHires.forEach((hireId) => {
+      const item = this.hireItems.find((i) => i.id === hireId)
       if (item && item.createActor) {
         const actor = item.createActor(scene, player)
         scene.add(actor)

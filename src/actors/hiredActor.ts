@@ -10,18 +10,18 @@ export abstract class HiredActor extends Actor {
   protected player: Player
   protected detectionRange = 500
 
-  constructor({player, ...config}: HiredActorConfig) {
+  constructor({ player, ...config }: HiredActorConfig) {
     super(config)
     this.player = player
   }
 
   abstract performAction(): void
-  
+
   // Common helper behavior methods
   protected followPlayer(): void {
     // Implementation
   }
-  
+
   protected findNearestZombie(zombies: Zombie[]): Zombie | null {
     let nearest: Zombie | null = null
     let shortestDistance = this.detectionRange
@@ -35,18 +35,5 @@ export abstract class HiredActor extends Actor {
     })
 
     return nearest
-  }
-
-  protected shootAtNearestZombie(): void {
-    if (!this.scene) {
-      return
-    }
-    const zombies = this.scene.actors.filter(
-      (a): a is Zombie => a instanceof Zombie
-    )
-    const nearestZombie = this.findNearestZombie(zombies)
-    if (nearestZombie) {
-      this.shootAt(nearestZombie)
-    }
   }
 }
