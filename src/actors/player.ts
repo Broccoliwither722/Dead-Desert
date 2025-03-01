@@ -20,7 +20,7 @@ export class Player extends ex.Actor {
   private hasGun: boolean = false
   private lastShotTime: number = 0
   private shotCooldown: number = 500 // ms between shots
-  private engine: ex.Engine
+  private engine!: ex.Engine
   private initialPosition: ex.Vector
   private tokens: number = 0
   private lastMobileRotation: number = 0
@@ -52,6 +52,7 @@ export class Player extends ex.Actor {
       anchor: ex.vec(0.6, 0.5), // Add this line - 0.5,0.5 is center (values from 0 to 1)
       collisionType: ex.CollisionType.Active,
       colloderGroup: playerGroup,
+      //@ts-ignore - Excalibur.js types are missing PolygonCollider
       collider: new ex.CircleCollider({
         radius: 16,
         offset: ex.vec(0, 0),

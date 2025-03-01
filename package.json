@@ -6,7 +6,9 @@
   "scripts": {
     "start": "vite",
     "build": "vite build --base=/Dead-Desert/",
-    "serve": "vite preview"
+    "serve": "vite preview",
+    "lint": "prettier --write src/**/*.ts",
+    "validate": "tsc --noEmit"
   },
   "author": "",
   "license": "ISC",

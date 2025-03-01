@@ -12,13 +12,12 @@ import { Gunslinger } from '../actors/gunslinger'
 import { ShopSystem } from '../systems/shopSystem'
 
 export class Town extends ex.Scene {
-  private waveController: WaveController
-  private spawnController: SpawnController
+  private waveController!: WaveController
+  private spawnController!: SpawnController
   private gameUI: GameUI = GameUI.getInstance()
-  private player: Player
-  private initialPlayerPos: ex.Vector
-  private sandBackground: SandBackground
-  private gunslinger: Gunslinger | null = null
+  private player!: Player
+  private initialPlayerPos!: ex.Vector
+  private sandBackground!: SandBackground
 
   public onInitialize(engine: ex.Engine) {
     // Add sand background
@@ -32,6 +31,7 @@ export class Town extends ex.Scene {
     this.spawnController = new SpawnController(this)
 
     this.waveController.on(WaveController.Events.WaveCompleted, () => {
+      ShopSystem.getInstance().onWaveEnd(this)
       this.gameUI.setupWaveUI(this.waveController.currentWaveNumber + 1, () =>
         this.startWave()
       )
@@ -40,12 +40,6 @@ export class Town extends ex.Scene {
     const center = engine.screen.center
     this.initialPlayerPos = ex.vec(center.x, 90)
     this.setupScene(center)
-
-    // Add gunslinger if hired
-    if (ShopSystem.getInstance().isHired('hire_gunslinger')) {
-      this.gunslinger = new Gunslinger(ex.vec(0, 0))
-      this.add(this.gunslinger)
-    }
   }
 
   private setupScene(center: ex.Vector) {
@@ -102,16 +96,11 @@ export class Town extends ex.Scene {
     this.gameUI.setupWaveUI(this.waveController.currentWaveNumber + 1, () =>
       this.startWave()
     )
-
-    // Position gunslinger if present
-    if (this.gunslinger) {
-      const center = this.engine.screen.center
-      this.gunslinger.pos = ex.vec(center.x + 200, center.y - 100)
-    }
   }
 
   private startWave(): void {
     if (this.waveController.isWaveActive) return
+    ShopSystem.getInstance().onWaveStart(this)
     this.waveController.startWave()
     this.gameUI.hideWaveUI()
     this.gameUI.showZombieTracker()
@@ -126,6 +115,7 @@ export class Town extends ex.Scene {
     this.waveController.reset()
     this.player.reset()
     this.player.pos = this.initialPlayerPos
+    ShopSystem.getInstance().onWaveEnd(this)
     // Kill all zombies
     this.actors.forEach((actor) => {
       if (actor instanceof Zombie) {

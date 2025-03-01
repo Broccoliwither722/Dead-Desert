@@ -2,11 +2,11 @@ import * as ex from 'excalibur'
 
 export class OnScreenControls {
   private static instance: OnScreenControls
-  private analogStick: HTMLDivElement
-  private analogKnob: HTMLDivElement
-  private shootButton: HTMLButtonElement
-  private reloadButton: HTMLButtonElement
-  private container: HTMLDivElement
+  private analogStick!: HTMLDivElement
+  private analogKnob!: HTMLDivElement
+  private shootButton!: HTMLButtonElement
+  private reloadButton!: HTMLButtonElement
+  private container!: HTMLDivElement
 
   private moveVector: ex.Vector = ex.vec(0, 0)
   private isShooting: boolean = false

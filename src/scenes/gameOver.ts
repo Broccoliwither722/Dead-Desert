@@ -1,17 +1,24 @@
 import { Scene } from 'excalibur'
 import { Town } from './town'
 import { UIManager } from '../ui/UIManager'
+import { ShopSystem } from '../systems/shopSystem'
 
 export class GameOver extends Scene {
-  container: HTMLElement
+  container!: HTMLElement
 
   public onActivate() {
+    // Get the ShopSystem instance and reset it
+    const shopSystem = ShopSystem.getInstance()
+    shopSystem.reset()
+
     // Clear saved ammo and wave on game over
     localStorage.removeItem('playerAmmo')
     localStorage.removeItem('playerHealth')
     localStorage.removeItem('playerTokens')
     localStorage.removeItem('currentWave')
+    // These are now handled by shopSystem.reset(), but keeping them for clarity
     localStorage.removeItem('shopPurchases')
+    localStorage.removeItem('activeHires')
 
     const ui = UIManager.getInstance()
     ui.setScene('GameOver')

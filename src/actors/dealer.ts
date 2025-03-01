@@ -54,6 +54,7 @@ export class Dealer extends ex.Actor {
       width: 140,
       height: 210,
       collisionType: ex.CollisionType.Passive,
+      //@ts-ignore - Excalibur.js types are missing PolygonCollider
       collider: new ex.PolygonCollider({
         points: [
           ex.vec(-70, -105),
@@ -82,29 +83,12 @@ export class Dealer extends ex.Actor {
     this.dialogBubble = new DialogBubble({
       align: 'right',
       rotation: 0,
-      style: 'ChatBubble2', // Use alternate chat bubble style
     })
     this.dialogBubble.pos = ex.vec(-35, -25) // Moved to left side
     this.addChild(this.dialogBubble)
 
     this.addChild(this.detectionZone)
     this.addChild(this.dealer)
-
-    console.log('added dealer')
-
-    // Log final setup
-    console.log('Dealer setup complete:', {
-      mainActor: {
-        pos: this.pos,
-        scale: this.scale,
-        z: this.z,
-      },
-      spriteActor: {
-        pos: this.dealer.pos,
-        scale: this.dealer.scale,
-        z: this.dealer.z,
-      },
-    })
   }
 
   private showGreeting(): void {

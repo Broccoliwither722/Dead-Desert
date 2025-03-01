@@ -15,13 +15,13 @@ import { Resources } from '../resources'
 import { Dealer } from '../actors/dealer'
 
 export class Saloon extends Scene {
-  private player: Player
+  private player!: Player
   private gameUI: GameUI = GameUI.getInstance()
   private walls: Actor[] = []
-  private door: Actor
-  private shopkeeper: ShopKeeper
+  private door!: Actor
+  private shopkeeper!: ShopKeeper
   private tables: Actor[] = []
-  private dealer: Dealer
+  private dealer!: Dealer
 
   public onInitialize(engine: Engine) {
     this.backgroundColor = Color.fromHex('#785124')
@@ -61,11 +61,12 @@ export class Saloon extends Scene {
         height: 140,
         color: Color.fromHex('#8B4513'),
         collisionType: CollisionType.Fixed,
+        //@ts-ignore - Excalibur.js types are missing PolygonCollider
         collider: new CircleCollider({
           radius: 60,
           offset: vec(0, 0),
         }),
-        z: 1,
+        z: -1,
       })
       table.graphics.use(
         Resources.Table.toSprite({
