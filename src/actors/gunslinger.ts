@@ -63,7 +63,7 @@ export class Gunslinger extends HiredActor {
         destSize: { width: 40, height: 32 },
       })
     )
-    this.gunslinger.scale = ex.vec(1.5, 1.5)
+    this.gunslinger.scale = ex.vec(1.3, 1.4)
 
     this.dialogBubble = new DialogBubble({
       align: 'left',
