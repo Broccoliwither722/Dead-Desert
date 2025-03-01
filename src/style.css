@@ -24,7 +24,7 @@
   transform: translate(-50%, -50%);
   padding: 15px 30px;
   font-size: 20px;
-  background-color: #ffffff;
+  background-color: #ffffffb7;
   color: rgb(0, 0, 0);
   border: none;
   border-radius: 5px;
@@ -32,10 +32,14 @@
   pointer-events: auto; /* Enable clicks for the button */
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
   transition: all 0.3s;
+  backdrop-filter: blur(5px) saturate(200%);
 }
 
 .button:hover {
-  background-color: #45a049;
+  /* background-color: #45a049; */
+  background-color: #f72727c9;
+  backdrop-filter: blur(5px) saturate(250%);
+  color: white;
 }
 
 #ui .zombie-tracker {
