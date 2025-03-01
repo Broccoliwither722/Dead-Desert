@@ -67,12 +67,34 @@ export class GameUI {
     this.hideHireMenu()
   }
 
+  public showHiredActorsPanel(): void {
+    if (this.hiredActorsPanel) {
+      this.hiredActorsPanel.style.display = 'block'
+      this.updateHiredActorsUI()
+    }
+  }
+
+  public hideHiredActorsPanel(): void {
+    if (this.hiredActorsPanel) {
+      this.hiredActorsPanel.style.display = 'none'
+    }
+  }
+
   public showGameUI(): void {
     if (this.healthBar) this.healthBar.style.display = 'block'
     if (this.ammoCounter) this.ammoCounter.style.display = 'block'
     if (this.tokenCounter) this.tokenCounter.style.display = 'block'
-    if (this.hiredActorsPanel) this.hiredActorsPanel.style.display = 'block'
-    this.updateHiredActorsUI()
+
+    // Only show the hired actors panel if there's no active wave
+    const currentScene = this.engine.currentScene
+    const waveController = (currentScene as any)['waveController']
+
+    if (waveController && !waveController.isWaveActive) {
+      if (this.hiredActorsPanel) this.hiredActorsPanel.style.display = 'block'
+      this.updateHiredActorsUI()
+    } else if (waveController && waveController.isWaveActive) {
+      if (this.hiredActorsPanel) this.hiredActorsPanel.style.display = 'none'
+    }
   }
 
   public showZombieTracker(): void {
@@ -179,6 +201,8 @@ export class GameUI {
     actorsContainer.innerHTML = ''
 
     const shopSystem = ShopSystem.getInstance()
+    // Force refresh the hire state
+    shopSystem.refreshHireState()
     const hireItems = shopSystem.getHireItems()
     try {
       const player = findPlayer(this.engine.currentScene)
@@ -251,8 +275,9 @@ export class GameUI {
     const shopSystem = ShopSystem.getInstance()
 
     if (shopSystem.hireHelper(itemId, player)) {
-      // Update UI after successful hire
+      // Update both UI panels after successful hire
       this.updateHiredActorsUI()
+      this.updateHireButtonStates(player)
       this.updateTokenCount(player.getTokens())
     }
   }
@@ -440,11 +465,15 @@ export class GameUI {
           itemEl.classList.remove('locked')
         }
         this.updateHireButtonStates(player)
+        // Update the mini hire panel
+        this.updateHiredActorsUI()
       }
     } else if (!shopSystem.isActiveHire(item.id)) {
       // Unlocked but not hired for this wave - try to hire
       if (shopSystem.hireHelper(item.id, player)) {
         this.updateHireButtonStates(player)
+        // Update the mini hire panel
+        this.updateHiredActorsUI()
       }
     }
   }

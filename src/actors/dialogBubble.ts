@@ -19,6 +19,7 @@ export class DialogBubble extends ex.Actor {
       z: 100,
       opacity: 0,
       rotation: config.rotation || 0,
+      collisionType: ex.CollisionType.PreventCollision,
     })
 
     this.alignment = config.align || 'left'
@@ -30,6 +31,7 @@ export class DialogBubble extends ex.Actor {
       color: ex.Color.White,
       z: -1,
       anchor: ex.vec(this.alignment === 'left' ? 0 : 1, 0.5),
+      collisionType: ex.CollisionType.PreventCollision,
     })
 
     this.background.graphics.use(
@@ -44,6 +46,7 @@ export class DialogBubble extends ex.Actor {
       anchor: ex.vec(this.alignment === 'left' ? 0 : 1, 0),
       rotation: config.rotation ? -config.rotation : 0, // Counter-rotate text
       color: ex.Color.Black,
+      collisionType: ex.CollisionType.PreventCollision,
       font: new ex.Font({
         smoothing: true,
         family: 'sans-serif',
