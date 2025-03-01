@@ -289,8 +289,8 @@ export class GameUI {
 
     const icon = document.createElement('img')
     icon.src = item.icon
-    icon.width = 32
-    icon.height = 32
+    icon.width = 64
+    icon.height = 64
 
     const info = document.createElement('div')
     info.className = 'item-info'
@@ -398,8 +398,8 @@ export class GameUI {
 
     const icon = document.createElement('img')
     icon.src = item.icon
-    icon.width = 32
-    icon.height = 32
+    icon.width = 64
+    icon.height = 64
 
     const info = document.createElement('div')
     info.className = 'item-info'

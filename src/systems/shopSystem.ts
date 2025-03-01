@@ -60,7 +60,7 @@ export class ShopSystem {
       id: 'hire_gunslinger',
       name: 'Gunslinger',
       description: 'A skilled shooter who helps defend against zombies',
-      icon: 'textures/gunslinger-icon.png',
+      icon: 'textures/Gunslinger-Icon.png',
       cost: 75,
       hirePrice: 10,
       oneTime: true,

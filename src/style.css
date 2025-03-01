@@ -213,6 +213,10 @@
   border-radius: 4px;
 }
 
+.shop-item img {
+  object-fit: contain;
+}
+
 #ui .shop-item.purchased {
   filter: saturate(0);
   opacity: 0.7;
