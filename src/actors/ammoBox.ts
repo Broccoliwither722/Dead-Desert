@@ -4,7 +4,7 @@ import { Resources } from '../resources'
 import { spawnableGroup } from '../utils/actorUtils'
 
 export class AmmoBox extends ex.Actor {
-  constructor(options) {
+  constructor(options: { pos: ex.Vector }) {
     super({
       pos: options.pos,
       width: 36,
