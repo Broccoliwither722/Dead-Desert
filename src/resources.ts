@@ -1,8 +1,8 @@
 // resources.ts
 import * as ex from 'excalibur'
-import { Gunslinger } from './actors/gunslinger'
 
 export const Resources = {
+  LargeIcon: new ex.ImageSource('public/images/App-Icon-1024.png'),
   // Relative to /public in vite
   playerIdle: new ex.ImageSource('textures/Idle.png'),
   playerOneGun: new ex.ImageSource('textures/GunIdle.svg'),
