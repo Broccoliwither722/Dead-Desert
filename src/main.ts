@@ -23,7 +23,7 @@ const game = new ex.Engine({
 })
 
 // Add debounced resize handler
-let resizeTimeout: number
+let resizeTimeout: ReturnType<typeof setTimeout>
 const handleResize = () => {
   clearTimeout(resizeTimeout)
   resizeTimeout = setTimeout(() => {
