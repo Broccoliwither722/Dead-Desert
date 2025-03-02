@@ -23,7 +23,7 @@ const game = new ex.Engine({
 })
 
 // Add debounced resize handler
-let resizeTimeout: number
+let resizeTimeout: ReturnType<typeof setTimeout>
 const handleResize = () => {
   clearTimeout(resizeTimeout)
   resizeTimeout = setTimeout(() => {
@@ -68,6 +68,15 @@ const gameOver = new GameOver()
 game.addScene('Town', town)
 game.addScene('Saloon', saloon)
 game.addScene('GameOver', gameOver)
+
+// Add the game icon
+const icon = new ex.Actor({
+  pos: ex.vec(game.screen.width / 2, game.screen.width / 10),
+  width: game.screen.width / 2,
+  height: game.screen.width / 2,
+})
+icon.graphics.use(Resources.LargeIcon.toSprite())
+game.add(icon)
 
 game.start(loader).then(() => {
   // game.goToScene('Town')

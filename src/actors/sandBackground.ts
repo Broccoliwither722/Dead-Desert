@@ -120,7 +120,7 @@ export class SandBackground extends ex.Actor {
     })
 
     // Apply material to actor
-    this.graphics.material = material
+    // this.graphics.material = material
   }
 
   public positionWalls(engine: ex.Engine) {

@@ -62,8 +62,8 @@ export class WaveController extends EventEmitter {
   }
 
   private spawnZombie(): void {
-    const randomX = Math.random() * this.scene.engine.drawWidth
-    const baseY = this.scene.engine.drawHeight + 50
+    const randomX = Math.random() * (this.scene.engine?.drawWidth || 800)
+    const baseY = (this.scene.engine?.drawHeight || 600) + 50
     const randomY = baseY + Math.random() * ((this.currentWave / 6) * 100)
 
     let sprite = Resources.zombieSprite.toSprite()

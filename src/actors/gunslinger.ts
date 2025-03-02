@@ -115,7 +115,7 @@ export class Gunslinger extends HiredActor {
       const currentTime = Date.now()
       if (currentTime - this.lastShotTime >= this.shootCooldown) {
         const direction = ex.Vector.fromAngle(this.gunslinger.rotation)
-        const gunOffset = ex.vec(30, -5).rotate(this.gunslinger.rotation)
+        const gunOffset = ex.vec(30, -17).rotate(this.gunslinger.rotation)
         const bulletPos = this.pos.add(gunOffset)
 
         const bullet = new Bullet(bulletPos, direction)

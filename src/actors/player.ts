@@ -128,7 +128,13 @@ export class Player extends ex.Actor {
   }
 
   private updateAmmoUI() {
-    this.gameUI.updateAmmoUI(this.currentAmmo, this.totalAmmo, this.isReloading)
+    if (this.gameUI && typeof this.gameUI.updateAmmoUI === 'function') {
+      this.gameUI.updateAmmoUI(
+        this.currentAmmo,
+        this.totalAmmo,
+        this.isReloading
+      )
+    }
   }
 
   public addAmmo(amount: number) {
@@ -306,7 +312,9 @@ export class Player extends ex.Actor {
 
   public damage(amount: number): void {
     this.health = Math.max(0, this.health - amount)
-    this.gameUI.updateHealthBar(this.health, this.maxHealth)
+    if (this.gameUI && typeof this.gameUI.updateHealthBar === 'function') {
+      this.gameUI.updateHealthBar(this.health, this.maxHealth)
+    }
     this.saveHealthState()
 
     // Emit particles
@@ -315,7 +323,7 @@ export class Player extends ex.Actor {
       this.damageParticleEmitter.isEmitting = false
     }, 200)
 
-    if (this.health <= 0) {
+    if (this.health <= 0 && this.engine) {
       this.engine.goToScene('GameOver')
     }
   }
@@ -340,7 +348,9 @@ export class Player extends ex.Actor {
 
   public addTokens(amount: number): void {
     this.tokens += amount
-    this.gameUI.updateTokenCount(this.tokens)
+    if (this.gameUI && typeof this.gameUI.updateTokenCount === 'function') {
+      this.gameUI.updateTokenCount(this.tokens)
+    }
     this.saveTokens()
   }
 
@@ -362,13 +372,17 @@ export class Player extends ex.Actor {
 
   public spendTokens(amount: number): void {
     this.tokens = Math.max(0, this.tokens - amount)
-    this.gameUI.updateTokenCount(this.tokens)
+    if (this.gameUI && typeof this.gameUI.updateTokenCount === 'function') {
+      this.gameUI.updateTokenCount(this.tokens)
+    }
     this.saveTokens()
   }
 
   public heal(amount: number): void {
     this.health = Math.min(this.maxHealth, this.health + amount)
-    this.gameUI.updateHealthBar(this.health, this.maxHealth)
+    if (this.gameUI && typeof this.gameUI.updateHealthBar === 'function') {
+      this.gameUI.updateHealthBar(this.health, this.maxHealth)
+    }
     this.saveHealthState()
 
     this.healthParticleEmitter.z = 50
@@ -381,16 +395,24 @@ export class Player extends ex.Actor {
   public increaseMaxHealth(amount: number): void {
     this.maxHealth += amount
     this.health = Math.min(this.health + amount, this.maxHealth)
-    this.gameUI.updateHealthBar(this.health, this.maxHealth)
+    if (this.gameUI && typeof this.gameUI.updateHealthBar === 'function') {
+      this.gameUI.updateHealthBar(this.health, this.maxHealth)
+    }
     this.saveHealthState()
   }
 
   public override onAdd(engine: ex.Engine): void {
     super.onAdd(engine)
     // Update UI with current state
-    this.updateAmmoUI()
-    this.gameUI.updateTokenCount(this.tokens)
-    this.gameUI.updateHealthBar(this.health, this.maxHealth)
+    if (this.gameUI) {
+      this.updateAmmoUI()
+      if (typeof this.gameUI.updateTokenCount === 'function') {
+        this.gameUI.updateTokenCount(this.tokens)
+      }
+      if (typeof this.gameUI.updateHealthBar === 'function') {
+        this.gameUI.updateHealthBar(this.health, this.maxHealth)
+      }
+    }
     // Apply any persistent perks
     ShopSystem.getInstance().applyPurchasedPerks(this)
   }

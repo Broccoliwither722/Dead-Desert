@@ -320,10 +320,10 @@ export class GameUI {
     const info = document.createElement('div')
     info.className = 'item-info'
     info.innerHTML = `
-      <h3>${item.name}</h3>
-      <p>${item.description}</p>
-      <span class="cost">${item.cost} tokens</span>
-    `
+       <h3>${item.name}</h3>
+       <p>${item.description}</p>
+       <span class="cost">${item.cost} tokens</span>
+     `
 
     const buyBtn = document.createElement('button')
     buyBtn.textContent = 'Buy'
@@ -429,14 +429,14 @@ export class GameUI {
     const info = document.createElement('div')
     info.className = 'item-info'
     info.innerHTML = `
-      <h3>${item.name}</h3>
-      <p>${item.description}</p>
-      <span class="cost">${
-        ShopSystem.getInstance().isHired(item.id)
-          ? `${item.hirePrice} tokens per wave`
-          : `${item.cost} tokens to unlock`
-      }</span>
-    `
+       <h3>${item.name}</h3>
+       <p>${item.description}</p>
+       <span class="cost">${
+         ShopSystem.getInstance().isHired(item.id)
+           ? `${item.hirePrice} tokens per wave`
+           : `${item.cost} tokens to unlock`
+       }</span>
+     `
 
     const hireBtn = document.createElement('button')
     hireBtn.textContent = ShopSystem.getInstance().isHired(item.id)
